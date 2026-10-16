@@ -15,6 +15,7 @@ Marcá cada tarea con `[x]` a medida que la completes.
   - [x] `users`
   - [x] `banlist`
   - [x] `clans`
+- [x] Sistema de cuentas: registro/login con MySQL y guardado de skin, vida y posicion
 
 ### Día 2: Sistema de Spawn y Clases
 - [ ] Selección de bando: **Humano / Zombie**
