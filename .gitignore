@@ -11,3 +11,4 @@
    *.log
    scriptfiles/*.db
    crashinfo.txt
+  mysql.ini

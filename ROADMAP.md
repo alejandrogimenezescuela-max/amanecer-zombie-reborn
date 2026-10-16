@@ -11,10 +11,10 @@ Marcá cada tarea con `[x]` a medida que la completes.
 ### Día 1: Entorno de Desarrollo y Persistencia
 - [x] Configurar open.mp local en la PC
 - [x] Repositorio en GitHub y entorno en VS Code
-- [ ] Crear la base de datos MySQL con las tablas:
-  - [ ] `users`
-  - [ ] `banlist`
-  - [ ] `clans`
+- [x] Crear la base de datos MySQL con las tablas:
+  - [x] `users`
+  - [x] `banlist`
+  - [x] `clans`
 
 ### Día 2: Sistema de Spawn y Clases
 - [ ] Selección de bando: **Humano / Zombie**
