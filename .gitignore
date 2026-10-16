@@ -1,0 +1,13 @@
+   # Ejecutables y componentes del servidor (se bajan de open.mp)
+   *.exe
+   *.dll
+   components/
+   plugins/
+
+   # Scripts compilados
+   *.amx
+
+   # Logs y datos generados
+   *.log
+   scriptfiles/*.db
+   crashinfo.txt
