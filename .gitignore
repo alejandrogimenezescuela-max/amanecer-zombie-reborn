@@ -1,13 +1,19 @@
-   # Ejecutables y componentes del servidor (se bajan de open.mp)
-   *.exe
-   *.dll
-   components/
-   plugins/
+# Ejecutables y componentes del servidor (se bajan de open.mp)
+*.exe
+*.dll
+*.pdb
+components/
+plugins/
 
-   # Scripts compilados
-   *.amx
+# Scripts compilados
+*.amx
 
-   # Logs y datos generados
-   *.log
-   scriptfiles/*.db
-   crashinfo.txt
+# Logs y datos generados
+*.log
+log.txt
+logs/
+scriptfiles/*.db
+crashinfo.txt
+
+# Credenciales
+mysql.ini
