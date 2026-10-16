@@ -17,6 +17,8 @@
 #define COLOR_ERROR             0xFF4040FF
 #define COLOR_INFO              0xFFFFFFFF
 #define COLOR_EXITO             0x00FF00FF
+#define COLOR_AVISO             0x808080FF      // entradas y salidas de jugadores (gris oscuro)
+#define COLOR_INFECTADO         0xB00000FF      // mensajes propios del zombie (rojo oscuro)
 
 // Colores de bando
 #define COLOR_HUMANO            0x00CC00FF

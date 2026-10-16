@@ -12,7 +12,7 @@ Recreación de un servidor de supervivencia zombie de SA-MP, construido sobre **
   ```
   qawno\pawncc.exe gamemodes\amanecer.pwn -ogamemodes\amanecer.amx -iqawno\include -igamemodes -;+ -(+
   ```
-- El gamemode está dividido en módulos en `gamemodes/modulos/*.inc` (config, utiles, jugador, mysql, bandos, spawns, cuentas, admin). `amanecer.pwn` solo tiene los callbacks y delega en funciones de cada módulo (sin y_hooks).
+- El gamemode está dividido en módulos en `gamemodes/modulos/*.inc` (config, utiles, jugador, mysql, bandos, spawns, cuentas, admin, conexiones). `amanecer.pwn` solo tiene los callbacks y delega en funciones de cada módulo (sin y_hooks).
 - Base de datos: **MySQL** (según `ROADMAP.md`). El primer borrador del sistema de cuentas usó SQLite (`scriptfiles/amanecer.db`) y hay que migrarlo.
 - Para probar: cliente SA-MP 0.3.7 conectando a `127.0.0.1:7777`.
 

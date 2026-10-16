@@ -153,9 +153,9 @@ static AvisarInfeccion(playerid)
 {
     new nombre[MAX_PLAYER_NAME + 1], mensaje[64];
     GetPlayerName(playerid, nombre, sizeof(nombre));
-    format(mensaje, sizeof(mensaje), "<!> %s ha sido infectado.", nombre);
+    format(mensaje, sizeof(mensaje), "[<!>] %s ha sido infectado.", nombre);
     AvisarATodos(COLOR_ERROR, mensaje);
-    SendClientMessage(playerid, COLOR_ERROR, "Ahora estas infectado.");
+    SendClientMessage(playerid, COLOR_INFECTADO, "Ahora estas infectado.");
 }
 
 // Mensaje a todos los jugadores que ya iniciaron sesion
@@ -186,7 +186,7 @@ Bando_Curar(playerid)
 
     new nombre[MAX_PLAYER_NAME + 1], mensaje[64];
     GetPlayerName(playerid, nombre, sizeof(nombre));
-    format(mensaje, sizeof(mensaje), "<!> %s ha sido curado.", nombre);
+    format(mensaje, sizeof(mensaje), "[<!>] %s ha sido curado.", nombre);
     AvisarATodos(COLOR_HUMANO, mensaje);
     SendClientMessage(playerid, COLOR_HUMANO, "Te curaron. Vuelves a ser humano.");
 
@@ -219,7 +219,7 @@ static AplicarBando(playerid)
     }
     else
     {
-        SendClientMessage(playerid, COLOR_ZOMBIE, "Eres un zombie, busca otros humanos para infectar.");
+        SendClientMessage(playerid, COLOR_INFECTADO, "Eres un zombie, busca otros humanos para infectar.");
     }
 }
 

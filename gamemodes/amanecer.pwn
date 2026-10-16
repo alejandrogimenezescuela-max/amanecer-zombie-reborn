@@ -10,6 +10,7 @@
 #include "modulos/spawns.inc"
 #include "modulos/cuentas.inc"
 #include "modulos/admin.inc"
+#include "modulos/conexiones.inc"
 
 main()
 {
@@ -21,6 +22,7 @@ public OnGameModeInit()
     MySQL_Conectar();
     SetGameModeText("Zombie Survival");
     SetWeather(CLIMA_NIEBLA);
+    UsePlayerPedAnims();    // todos los skins caminan y corren como CJ
     Bando_CrearClases();
     Spawns_Cargar();
     return 1;
@@ -39,7 +41,7 @@ public OnPlayerConnect(playerid)
     gContadorConsulta[playerid]++;
 
     SendClientMessage(playerid, COLOR_EXITO, "Bienvenido a Amanecer Zombie Reborn.");
-    SendClientMessage(playerid, COLOR_INFO, "El mundo cayo. Sobrevivi como puedas...");
+    Conexion_AlEntrar(playerid);
 
     Bando_CrearTexto(playerid);
     Cuentas_AlConectar(playerid);
@@ -48,6 +50,7 @@ public OnPlayerConnect(playerid)
 
 public OnPlayerDisconnect(playerid, reason)
 {
+    Conexion_AlSalir(playerid, reason);
     GuardarCuenta(playerid);
     gContadorConsulta[playerid]++;
     ReiniciarDatos(playerid);
