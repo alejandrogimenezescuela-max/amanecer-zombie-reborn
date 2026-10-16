@@ -1,0 +1,53 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Compilar gamemode",
+            "type": "process",
+            "command": "${workspaceFolder}\\qawno\\pawncc.exe",
+            "args": [
+                "${workspaceFolder}\\gamemodes\\amanecer.pwn",
+                "-o${workspaceFolder}\\gamemodes\\amanecer.amx",
+                "-i${workspaceFolder}\\qawno\\include",
+                "-;+",
+                "-(+"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "clear": true
+            },
+            "problemMatcher": {
+                "owner": "pawn",
+                "fileLocation": "absolute",
+                "pattern": {
+                    "regexp": "^(.*?)\\((\\d+)(?:\\s*--\\s*\\d+)?\\)\\s*:\\s*(warning|error|fatal error)\\s+(\\d+):\\s*(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "severity": 3,
+                    "code": 4,
+                    "message": 5
+                }
+            }
+        },
+        {
+            "label": "Iniciar servidor",
+            "type": "process",
+            "command": "${workspaceFolder}\\omp-server.exe",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            },
+            "problemMatcher": []
+        }
+    ]
+}
