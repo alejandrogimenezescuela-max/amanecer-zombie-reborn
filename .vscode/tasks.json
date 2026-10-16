@@ -9,6 +9,7 @@
                 "${workspaceFolder}\\gamemodes\\amanecer.pwn",
                 "-o${workspaceFolder}\\gamemodes\\amanecer.amx",
                 "-i${workspaceFolder}\\qawno\\include",
+                "-i${workspaceFolder}\\gamemodes",
                 "-;+",
                 "-(+"
             ],

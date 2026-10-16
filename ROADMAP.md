@@ -15,12 +15,21 @@ Marcá cada tarea con `[x]` a medida que la completes.
   - [x] `users`
   - [x] `banlist`
   - [x] `clans`
-- [x] Sistema de cuentas: registro/login con MySQL y guardado de skin, vida y posicion
+- [x] Sistema de cuentas: registro/login con MySQL y guardado de skin, bando y vida
 
 ### Día 2: Sistema de Spawn y Clases
-- [ ] Selección de bando: **Humano / Zombie**
+- [x] Gamemode dividido en módulos (`gamemodes/modulos/*.inc`)
+- [x] Selección de bando: **Humano / Zombie**
+  - [x] Selector de skin con texto HUMANO (verde) / ZOMBIE (blanco); skins de zombie agrupados
+  - [x] El humano que muere se infecta y reaparece como zombie, con aviso a todo el servidor
+  - [x] Nombre en el chat con el color del bando
 - [ ] Habilidades iniciales de cada bando
+  - [x] Humanos: kit de armas (AK-47, MP5, Desert Eagle) y frases al spawnear
+  - [ ] Zombies: por definir
+- [x] Spawns aleatorios por bando (tabla `spawns`) y herramientas de admin para armarlos (`/spawnh`, `/spawnz`, `/spawns`, `/borrarspawn`, `/ir`, clic en el mapa)
 - [ ] Punto de spawn neurálgico en Los Santos (Safezone principal / Hospital)
+- [x] Clima de niebla, skin 155 para admins RCON, `/cure` y `/virus`
+- [ ] Cura en el skatepark de Los Santos (por ahora solo la cámara del login lo muestra)
 
 ### Día 3: Sistema VIP & Balance
 - [ ] Regeneración pasiva lenta (**Manos de Fuego**)

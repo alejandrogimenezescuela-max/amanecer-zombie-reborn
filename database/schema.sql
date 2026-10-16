@@ -81,6 +81,19 @@ ALTER TABLE clans
         ON DELETE SET NULL;
 
 -- ------------------------------------------------------------
+--  Spawns por bando (el gamemode tambien la crea si no existe)
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS spawns (
+    id              INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    bando           ENUM('humano', 'zombie') NOT NULL,
+    pos_x           FLOAT        NOT NULL,
+    pos_y           FLOAT        NOT NULL,
+    pos_z           FLOAT        NOT NULL,
+    angulo          FLOAT        NOT NULL DEFAULT 0,
+    PRIMARY KEY (id)
+) ENGINE=InnoDB;
+
+-- ------------------------------------------------------------
 --  Lista de baneos (por cuenta, IP, subred, GPCI y Discord)
 -- ------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS banlist (
