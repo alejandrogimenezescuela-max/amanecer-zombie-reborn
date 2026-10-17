@@ -46,6 +46,7 @@ CREATE TABLE IF NOT EXISTS users (
     pos_z           FLOAT        NULL,
     angulo          FLOAT        NULL,
     score           INT          NOT NULL DEFAULT 0,
+    dinero          INT          NOT NULL DEFAULT 0,      -- el gamemode la agrega si falta
     kills           INT UNSIGNED NOT NULL DEFAULT 0,
     muertes         INT UNSIGNED NOT NULL DEFAULT 0,
 

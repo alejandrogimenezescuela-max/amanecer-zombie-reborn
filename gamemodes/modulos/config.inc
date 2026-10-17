@@ -6,6 +6,21 @@
 #define DIALOGO_LOGIN           1
 #define DIALOGO_REGISTRO        2
 #define DIALOGO_SPAWNS          3
+#define DIALOGO_ITEMS           4
+#define DIALOGO_ADMINS          5
+
+// Rangos de admin (users.admin_nivel). El CEO solo se asigna en la base.
+#define RANGO_NINGUNO           0
+#define RANGO_MODERADOR         1
+#define RANGO_ADMINISTRADOR     2
+#define RANGO_CEO               3
+#define EMBED_MODERADOR         "{00BFFF}"      // celeste
+#define EMBED_ADMINISTRADOR     "{FF2020}"      // rojo
+#define EMBED_CEO               "{FFD700}"      // dorado
+
+// Precios de /item
+#define PRECIO_ANTIDOTO         150000
+#define PRECIO_VIRUS            20000
 
 // Cuentas
 #define MAX_INTENTOS_LOGIN      3
@@ -36,8 +51,21 @@
 #define MUNICION_MP5            300
 #define MUNICION_DEAGLE         70
 
-// Skin automatico de los admins RCON
+// Skin automatico del CEO
 #define SKIN_ADMIN              155
+
+// Particula que aparece donde muere un jugador
+#define MODELO_EFECTO_MUERTE    18668
+#define DURACION_EFECTO_MUERTE  2000    // ms hasta que desaparece
+
+// Manos de fuego del CEO
+#define MODELO_FUEGO            18693   // particulas de fuego
+#define SLOT_FUEGO_IZQ          8       // slots de objetos pegados (0-9)
+#define SLOT_FUEGO_DER          9
+#define HUESO_MANO_IZQ          5
+#define HUESO_MANO_DER          6
+#define REGEN_INTERVALO         2000    // ms
+const Float:REGEN_CANTIDAD = 10.0;      // vida y chaleco por intervalo
 
 // Grove Street (Los Santos): lugar del selector de skin y spawn
 // de respaldo si un bando no tiene spawns cargados

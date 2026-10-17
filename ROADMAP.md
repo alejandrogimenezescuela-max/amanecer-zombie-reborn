@@ -28,8 +28,17 @@ Marcá cada tarea con `[x]` a medida que la completes.
   - [ ] Zombies: por definir
 - [x] Spawns aleatorios por bando (tabla `spawns`) y herramientas de admin para armarlos (`/spawnh`, `/spawnz`, `/spawns`, `/borrarspawn`, `/ir`, clic en el mapa)
 - [ ] Punto de spawn neurálgico en Los Santos (Safezone principal / Hospital)
-- [x] Clima de niebla, skin 155 para admins RCON, `/cure` y `/virus`
+- [x] Clima de niebla, animaciones de CJ para todos los skins
+- [x] Avisos `[<!>]` de entrada/salida (con razón), infección y cura
+- [x] Partícula al morir
+- [x] `/item`: Antídoto ($150.000), Virus ($20.000) y selector de skin con imágenes
+- [x] Dinero guardado en `users.dinero` (por ahora solo se consigue con `/dardinero`)
+- [x] Rangos de admin en `users.admin_nivel`: Moderador, Administrador y CEO; `/admin` y `/daradmin`
+- [x] CEO: skin 155, manos de fuego con regeneración, `/cure`, `/virus`, `/dardinero` y herramientas de spawns
+- [x] RCON sin poderes dentro del juego (contraseña aleatoria)
 - [ ] Cura en el skatepark de Los Santos (por ahora solo la cámara del login lo muestra)
+- [ ] Definir cómo se gana dinero jugando
+- [ ] Definir qué comandos tienen Moderador y Administrador
 
 ### Día 3: Sistema VIP & Balance
 - [ ] Regeneración pasiva lenta (**Manos de Fuego**)

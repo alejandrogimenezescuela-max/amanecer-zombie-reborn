@@ -1,7 +1,7 @@
 // ------------------------------------------------------------
 //  Spawns por bando (tabla spawns) y herramientas de admin
 //  para armarlos: teleport con clic en el mapa, /ir, /spawnh,
-//  /spawnz, /spawns y /borrarspawn. Solo admins RCON.
+//  /spawnz, /spawns y /borrarspawn. Solo el CEO.
 // ------------------------------------------------------------
 
 #define MAX_SPAWNS              40
@@ -88,7 +88,7 @@ Spawns_Elegir(E_BANDO:bando, &Float:x, &Float:y, &Float:z, &Float:angulo)
 // Teleport con clic derecho en el mapa del menu de pausa
 Spawns_AlClicEnMapa(playerid, Float:x, Float:y, Float:z)
 {
-    if (!IsPlayerAdmin(playerid)) return;
+    if (!EsCEO(playerid)) return;
     Teletransportar(playerid, x, y, z);
 }
 
@@ -104,9 +104,9 @@ Spawns_AlComando(playerid, const cmdtext[])
         return 0;
     }
 
-    if (!IsPlayerAdmin(playerid))
+    if (!EsCEO(playerid))
     {
-        SendClientMessage(playerid, COLOR_ERROR, "Solo los administradores pueden usar este comando.");
+        SendClientMessage(playerid, COLOR_ERROR, "No tenes permiso para usar este comando.");
         return 1;
     }
 
@@ -159,7 +159,7 @@ Spawns_AlComando(playerid, const cmdtext[])
 Spawns_AlResponderDialogo(playerid, dialogid, response, listitem)
 {
     if (dialogid != DIALOGO_SPAWNS) return 0;
-    if (!response || !IsPlayerAdmin(playerid)) return 1;
+    if (!response || !EsCEO(playerid)) return 1;
     if (0 <= listitem < gTotalSpawns)
     {
         SetPlayerPos(playerid, gSpawns[listitem][sX], gSpawns[listitem][sY], gSpawns[listitem][sZ]);
