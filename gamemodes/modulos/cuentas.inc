@@ -7,15 +7,62 @@ forward AlRegistrarCuenta(playerid, contador);
 forward MostrarCiudad(playerid, contador);
 forward KickDiferido(playerid, contador);
 
+// IPs que agotaron los intentos de login: no pueden volver a probar por un rato.
+// Asi reconectar no sirve para adivinar claves sin limite.
+#define MAX_IPS_BLOQUEADAS      32
+#define BLOQUEO_LOGIN_MS        (2 * 60 * 1000)     // 2 minutos
+
+static gIpBloqueada[MAX_IPS_BLOQUEADAS][16];
+static gBloqueoHasta[MAX_IPS_BLOQUEADAS];
+
+static BloquearIp(playerid)
+{
+    new ip[16], ahora = GetTickCount(), libre = 0;
+    GetPlayerIp(playerid, ip, sizeof(ip));
+
+    // Se reusa la misma IP, un lugar vencido o, si no hay, el que vence antes
+    for (new i = 0; i < MAX_IPS_BLOQUEADAS; i++)
+    {
+        if (!strcmp(gIpBloqueada[i], ip) || gBloqueoHasta[i] - ahora <= 0) { libre = i; break; }
+        if (gBloqueoHasta[i] - gBloqueoHasta[libre] < 0) libre = i;
+    }
+    strcopy(gIpBloqueada[libre], ip, sizeof(gIpBloqueada[]));
+    gBloqueoHasta[libre] = ahora + BLOQUEO_LOGIN_MS;
+}
+
+// Segundos que le faltan a la IP del jugador para poder volver a entrar (0 = libre)
+static SegundosDeBloqueo(playerid)
+{
+    new ip[16], ahora = GetTickCount();
+    GetPlayerIp(playerid, ip, sizeof(ip));
+
+    for (new i = 0; i < MAX_IPS_BLOQUEADAS; i++)
+    {
+        new restante = gBloqueoHasta[i] - ahora;
+        if (restante > 0 && gIpBloqueada[i][0] != EOS && !strcmp(gIpBloqueada[i], ip)) return restante / 1000 + 1;
+    }
+    return 0;
+}
+
 // Busca la cuenta por nombre al conectar
 Cuentas_AlConectar(playerid)
 {
     PonerEnEspera(playerid);
 
+    new espera = SegundosDeBloqueo(playerid);
+    if (espera > 0)
+    {
+        new mensaje[96];
+        format(mensaje, sizeof(mensaje), "Demasiados intentos fallidos. Espera %d segundos para volver a entrar.", espera);
+        SendClientMessage(playerid, COLOR_ERROR, mensaje);
+        ExpulsarConRetraso(playerid);
+        return;
+    }
+
     new nombre[MAX_PLAYER_NAME + 1], consulta[160];
     GetPlayerName(playerid, nombre, sizeof(nombre));
     mysql_format(gMySQL, consulta, sizeof(consulta),
-        "SELECT id, password_hash, salt, vida FROM users WHERE nombre = '%e' LIMIT 1",
+        "SELECT id, password_hash, salt, vida, dinero, admin_nivel FROM users WHERE nombre = '%e' LIMIT 1",
         nombre);
     mysql_tquery(gMySQL, consulta, "AlCargarCuenta", "dd", playerid, gContadorConsulta[playerid]);
 }
@@ -31,6 +78,8 @@ public AlCargarCuenta(playerid, contador)
         cache_get_value_name(0, "password_hash", gJugador[playerid][jHash], LARGO_HASH);
         cache_get_value_name(0, "salt", gJugador[playerid][jSalt], LARGO_SALT + 1);
         cache_get_value_name_float(0, "vida", gJugador[playerid][jVida]);
+        cache_get_value_name_int(0, "dinero", gJugador[playerid][jDinero]);
+        cache_get_value_name_int(0, "admin_nivel", gJugador[playerid][jAdminNivel]);
         if (gJugador[playerid][jVida] <= 0.0) gJugador[playerid][jVida] = 100.0;
 
         MostrarLogin(playerid, "");
@@ -90,6 +139,7 @@ Cuentas_AlResponderDialogo(playerid, dialogid, response, const inputtext[])
                 if (gJugador[playerid][jIntentos] >= MAX_INTENTOS_LOGIN)
                 {
                     SendClientMessage(playerid, COLOR_ERROR, "Clave incorrecta. Agotaste los intentos y fuiste expulsado.");
+                    BloquearIp(playerid);
                     ExpulsarConRetraso(playerid);
                 }
                 else
@@ -180,6 +230,7 @@ Cuentas_AlSpawnear(playerid)
     SetPlayerFacingAngle(playerid, angulo);
     SetPlayerHealth(playerid, gJugador[playerid][jVida]);
     SetCameraBehindPlayer(playerid);
+    Dinero_Sincronizar(playerid);
 }
 
 // Al morir reaparece con vida llena y el mismo skin (la clase elegida se mantiene)
@@ -206,8 +257,8 @@ GuardarCuenta(playerid)
     if (gJugador[playerid][jMuerto] || vida <= 0.0) vida = 100.0;
 
     mysql_format(gMySQL, consulta, sizeof(consulta),
-        "UPDATE users SET bando = '%e', skin = %d, vida = %f WHERE id = %d",
-        bando, gJugador[playerid][jSkin], vida, gJugador[playerid][jId]);
+        "UPDATE users SET bando = '%e', skin = %d, vida = %f, dinero = %d WHERE id = %d",
+        bando, gJugador[playerid][jSkin], vida, gJugador[playerid][jDinero], gJugador[playerid][jId]);
     mysql_tquery(gMySQL, consulta);
     return 1;
 }

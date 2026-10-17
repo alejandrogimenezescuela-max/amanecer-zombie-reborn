@@ -11,6 +11,10 @@ static const gSkinsZombie[] = { 162, 230, 200, 239, 135, 134, 79, 75, 77 };
 // Skin de cada clase, para saber cual esta mirando en el selector
 static gSkinDeClase[MAX_SKIN + 1];
 
+// Skins que puede usar un humano (se arma al crear las clases)
+static gSkinsHumano[MAX_SKIN + 1];
+static gTotalSkinsHumano;
+
 // Camara del selector: frente al personaje en Grove Street
 const Float:CAMARA_SELECTOR_X = 2495.0;
 const Float:CAMARA_SELECTOR_Y = -1683.0;
@@ -48,6 +52,7 @@ Bando_Texto(E_BANDO:bando, texto[], largo = sizeof(texto))
 Bando_CrearClases()
 {
     AgregarClase(1);
+    gSkinsHumano[gTotalSkinsHumano++] = 1;
 
     for (new i = 0; i < sizeof(gSkinsZombie); i++)
     {
@@ -58,7 +63,20 @@ Bando_CrearClases()
     {
         if (skin == SKIN_INVALIDO || Bando_DeSkin(skin) == BANDO_ZOMBIE) continue;
         AgregarClase(skin);
+        gSkinsHumano[gTotalSkinsHumano++] = skin;
     }
+}
+
+// Cantidad de skins disponibles para un bando (sin CJ)
+Bando_TotalSkins(E_BANDO:bando)
+{
+    return (bando == BANDO_ZOMBIE) ? sizeof(gSkinsZombie) : gTotalSkinsHumano;
+}
+
+// Skin numero 'indice' de la lista del bando
+Bando_SkinEnIndice(E_BANDO:bando, indice)
+{
+    return (bando == BANDO_ZOMBIE) ? gSkinsZombie[indice] : gSkinsHumano[indice];
 }
 
 static AgregarClase(skin)
@@ -153,9 +171,9 @@ static AvisarInfeccion(playerid)
 {
     new nombre[MAX_PLAYER_NAME + 1], mensaje[64];
     GetPlayerName(playerid, nombre, sizeof(nombre));
-    format(mensaje, sizeof(mensaje), "<!> %s ha sido infectado.", nombre);
+    format(mensaje, sizeof(mensaje), "[<!>] %s ha sido infectado.", nombre);
     AvisarATodos(COLOR_ERROR, mensaje);
-    SendClientMessage(playerid, COLOR_ERROR, "Ahora estas infectado.");
+    SendClientMessage(playerid, COLOR_INFECTADO, "Ahora estas infectado.");
 }
 
 // Mensaje a todos los jugadores que ya iniciaron sesion
@@ -186,7 +204,7 @@ Bando_Curar(playerid)
 
     new nombre[MAX_PLAYER_NAME + 1], mensaje[64];
     GetPlayerName(playerid, nombre, sizeof(nombre));
-    format(mensaje, sizeof(mensaje), "<!> %s ha sido curado.", nombre);
+    format(mensaje, sizeof(mensaje), "[<!>] %s ha sido curado.", nombre);
     AvisarATodos(COLOR_HUMANO, mensaje);
     SendClientMessage(playerid, COLOR_HUMANO, "Te curaron. Vuelves a ser humano.");
 
@@ -219,18 +237,20 @@ static AplicarBando(playerid)
     }
     else
     {
-        SendClientMessage(playerid, COLOR_ZOMBIE, "Eres un zombie, busca otros humanos para infectar.");
+        SendClientMessage(playerid, COLOR_INFECTADO, "Eres un zombie, busca otros humanos para infectar.");
     }
 }
 
 // Chat: el nombre en verde si es humano o en blanco si es zombie
 Bando_AlHablar(playerid, const texto[])
 {
-    new nombre[MAX_PLAYER_NAME + 1], mensaje[144];
+    new nombre[MAX_PLAYER_NAME + 1], mensaje[144], limpio[144];
     GetPlayerName(playerid, nombre, sizeof(nombre));
+    strcat(limpio, texto);
+    LimpiarColores(limpio);
 
     format(mensaje, sizeof(mensaje), "%s%s: {DDDDDD}%s",
-        (gJugador[playerid][jBando] == BANDO_ZOMBIE) ? (EMBED_ZOMBIE) : (EMBED_HUMANO), nombre, texto);
+        (gJugador[playerid][jBando] == BANDO_ZOMBIE) ? (EMBED_ZOMBIE) : (EMBED_HUMANO), nombre, limpio);
     SendClientMessageToAll(COLOR_INFO, mensaje);
 }
 

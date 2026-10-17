@@ -6,8 +6,9 @@ new MySQL:gMySQL;
 
 MySQL_Conectar()
 {
-    // Registra todo lo que pasa con MySQL en logs/plugins/mysql.log
-    mysql_log(ALL);
+    // Solo errores y advertencias en logs/plugins/mysql.log. Con ALL se escribe
+    // cada consulta completa (hashes, salts e IPs de los jugadores): usar solo para depurar.
+    mysql_log(ERROR | WARNING);
 
     gMySQL = mysql_connect_file();
     if (gMySQL == MYSQL_INVALID_HANDLE || mysql_errno(gMySQL) != 0)
