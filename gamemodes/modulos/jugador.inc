@@ -22,6 +22,9 @@ enum E_JUGADOR
     Float:jVida,
     jDinero,                // el valor real; el del GTA es solo para mostrar
     jAdminNivel,            // rango guardado (RANGO_*); ver Admin_Rango
+    jCfgClima,              // /config: -1 = el del servidor
+    jCfgHora,               // /config: -1 = la del servidor
+    jCfgFlags,              // /config: opciones desactivadas (CFG_SIN_*)
     bool:jMuerto,
     PlayerText:jTextoBando
 }
@@ -52,6 +55,9 @@ ReiniciarDatos(playerid)
     gJugador[playerid][jVida] = 100.0;
     gJugador[playerid][jDinero] = 0;
     gJugador[playerid][jAdminNivel] = RANGO_NINGUNO;
+    gJugador[playerid][jCfgClima] = -1;
+    gJugador[playerid][jCfgHora] = -1;
+    gJugador[playerid][jCfgFlags] = 0;
     gJugador[playerid][jMuerto] = false;
     gJugador[playerid][jTextoBando] = INVALID_PLAYER_TEXT_DRAW;
 }

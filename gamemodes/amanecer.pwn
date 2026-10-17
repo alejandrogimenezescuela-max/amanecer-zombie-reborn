@@ -14,6 +14,10 @@
 #include "modulos/conexiones.inc"
 #include "modulos/items.inc"
 #include "modulos/efectos.inc"
+#include "modulos/vuelo.inc"
+#include "modulos/interfaz.inc"
+#include "modulos/parque.inc"
+#include "modulos/ajustes.inc"
 
 main()
 {
@@ -24,12 +28,15 @@ public OnGameModeInit()
 {
     MySQL_Conectar();
     Dinero_PrepararTabla();
+    Ajustes_PrepararTabla();
     SetGameModeText("Zombie Survival");
     SetWeather(CLIMA_NIEBLA);
     UsePlayerPedAnims();    // todos los skins caminan y corren como CJ
     Bando_CrearClases();
     Spawns_Cargar();
     Admin_Iniciar();
+    Interfaz_Crear();
+    Parque_Iniciar();
     return 1;
 }
 
@@ -57,6 +64,7 @@ public OnPlayerDisconnect(playerid, reason)
 {
     Conexion_AlSalir(playerid, reason);
     Items_Cerrar(playerid);
+    Vuelo_Desactivar(playerid);
     GuardarCuenta(playerid);
     gContadorConsulta[playerid]++;
     ReiniciarDatos(playerid);
@@ -68,6 +76,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
     if (Cuentas_AlResponderDialogo(playerid, dialogid, response, inputtext)) return 1;
     if (Spawns_AlResponderDialogo(playerid, dialogid, response, listitem)) return 1;
     if (Items_AlResponderDialogo(playerid, dialogid, response, listitem)) return 1;
+    if (Ajustes_AlResponderDialogo(playerid, dialogid, response, listitem)) return 1;
     return 0;
 }
 
@@ -77,6 +86,9 @@ public OnPlayerCommandText(playerid, cmdtext[])
     if (Spawns_AlComando(playerid, cmdtext)) return 1;
     if (Admin_AlComando(playerid, cmdtext)) return 1;
     if (Items_AlComando(playerid, cmdtext)) return 1;
+    if (Vuelo_AlComando(playerid, cmdtext)) return 1;
+    if (Parque_AlComando(playerid, cmdtext)) return 1;
+    if (Ajustes_AlComando(playerid, cmdtext)) return 1;
     return 0;
 }
 
@@ -89,6 +101,7 @@ public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid)
 public OnPlayerUpdate(playerid)
 {
     Admin_AlActualizar(playerid);
+    Vuelo_AlActualizar(playerid);
     return 1;   // devolver 0 bloquearia la sincronizacion del jugador
 }
 
@@ -149,6 +162,10 @@ public OnPlayerSpawn(playerid)
     Cuentas_AlSpawnear(playerid);
     Bando_AlSpawnear(playerid);
     Admin_AlSpawnear(playerid);
+    Vuelo_Desactivar(playerid);
+    Vuelo_PrecargarAnimaciones(playerid);
+    Interfaz_Mostrar(playerid);
+    Ajustes_Aplicar(playerid);
     return 1;
 }
 
@@ -164,6 +181,7 @@ public OnPlayerDeath(playerid, killerid, WEAPON:reason)
     if (!gJugador[playerid][jLogueado]) return 1;
 
     Items_Cerrar(playerid);
+    Vuelo_Desactivar(playerid);
     Efectos_AlMorir(playerid);
     Cuentas_AlMorir(playerid);
     Bando_AlMorir(playerid);

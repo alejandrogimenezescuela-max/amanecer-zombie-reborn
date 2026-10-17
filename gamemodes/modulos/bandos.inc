@@ -15,10 +15,16 @@ static gSkinDeClase[MAX_SKIN + 1];
 static gSkinsHumano[MAX_SKIN + 1];
 static gTotalSkinsHumano;
 
-// Camara del selector: frente al personaje en Grove Street
-const Float:CAMARA_SELECTOR_X = 2495.0;
-const Float:CAMARA_SELECTOR_Y = -1683.0;
-const Float:CAMARA_SELECTOR_Z = 14.5;
+// Lugar del selector: lobby de Zombotech (San Fierro), frente al cartel
+const Float:SELECTOR_X = -1943.8931;
+const Float:SELECTOR_Y = 708.0086;
+const Float:SELECTOR_Z = 46.5625;
+const Float:SELECTOR_ANGULO = 2.3837;
+
+// Camara ~4 m delante del personaje (hacia donde mira), un poco mas alta que la cabeza
+const Float:CAMARA_SELECTOR_X = -1944.0595;
+const Float:CAMARA_SELECTOR_Y = 712.0051;
+const Float:CAMARA_SELECTOR_Z = 47.2;
 
 E_BANDO:Bando_DeSkin(skin)
 {
@@ -81,7 +87,8 @@ Bando_SkinEnIndice(E_BANDO:bando, indice)
 
 static AgregarClase(skin)
 {
-    new clase = AddPlayerClass(skin, SPAWN_INICIAL_X, SPAWN_INICIAL_Y, SPAWN_INICIAL_Z, SPAWN_INICIAL_ANGULO);
+    // Las clases estan en el lugar del selector; al spawnear se va a un spawn de su bando
+    new clase = AddPlayerClass(skin, SELECTOR_X, SELECTOR_Y, SELECTOR_Z, SELECTOR_ANGULO);
     if (0 <= clase < sizeof(gSkinDeClase)) gSkinDeClase[clase] = skin;
 }
 
@@ -111,10 +118,11 @@ Bando_MostrarSkin(playerid, classid)
     new E_BANDO:bando = Bando_DeSkin(skin);
     gJugador[playerid][jSkinSeleccion] = skin;
 
-    SetPlayerPos(playerid, SPAWN_INICIAL_X, SPAWN_INICIAL_Y, SPAWN_INICIAL_Z);
-    SetPlayerFacingAngle(playerid, SPAWN_INICIAL_ANGULO);
+    SetPlayerInterior(playerid, 0);
+    SetPlayerPos(playerid, SELECTOR_X, SELECTOR_Y, SELECTOR_Z);
+    SetPlayerFacingAngle(playerid, SELECTOR_ANGULO);
     SetPlayerCameraPos(playerid, CAMARA_SELECTOR_X, CAMARA_SELECTOR_Y, CAMARA_SELECTOR_Z);
-    SetPlayerCameraLookAt(playerid, SPAWN_INICIAL_X, SPAWN_INICIAL_Y, SPAWN_INICIAL_Z + 0.5);
+    SetPlayerCameraLookAt(playerid, SELECTOR_X, SELECTOR_Y, SELECTOR_Z + 0.3);
 
     new nombre[8];
     Bando_Nombre(bando, nombre);
@@ -123,9 +131,16 @@ Bando_MostrarSkin(playerid, classid)
     PlayerTextDrawShow(playerid, gJugador[playerid][jTextoBando]);
 }
 
+// Musica de fondo mientras elige skin (se llama una vez al entrar al selector)
+Bando_IniciarMusica(playerid)
+{
+    if (Ajustes_Activado(playerid, CFG_SIN_MUSICA)) PlayAudioStreamForPlayer(playerid, MUSICA_SELECTOR);
+}
+
 // Se llama en OnPlayerRequestSpawn: fija el skin y el bando elegidos
 Bando_ConfirmarSeleccion(playerid)
 {
+    StopAudioStreamForPlayer(playerid);
     gJugador[playerid][jSkin] = gJugador[playerid][jSkinSeleccion];
     gJugador[playerid][jBando] = Bando_DeSkin(gJugador[playerid][jSkin]);
     Bando_OcultarTexto(playerid);

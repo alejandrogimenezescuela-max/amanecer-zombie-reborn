@@ -44,7 +44,12 @@ Conexion_AlSalir(playerid, motivo)
     AvisarATodos(mensaje);
 }
 
+// A todos los que no apagaron los avisos en /config (en el login todavia no
+// hay ajustes cargados: se les muestra)
 static AvisarATodos(const mensaje[])
 {
-    SendClientMessageToAll(COLOR_AVISO, mensaje);
+    for (new i = 0; i < MAX_PLAYERS; i++)
+    {
+        if (IsPlayerConnected(i) && Ajustes_Activado(i, CFG_SIN_AVISOS)) SendClientMessage(i, COLOR_AVISO, mensaje);
+    }
 }

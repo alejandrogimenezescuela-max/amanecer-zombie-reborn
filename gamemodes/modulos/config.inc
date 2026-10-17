@@ -8,6 +8,16 @@
 #define DIALOGO_SPAWNS          3
 #define DIALOGO_ITEMS           4
 #define DIALOGO_ADMINS          5
+#define DIALOGO_CONFIG          6
+#define DIALOGO_CONFIG_CLIMA    7
+#define DIALOGO_CONFIG_HORA     8
+
+// Opciones de /config que el jugador puede apagar (bits de users.cfg_flags).
+// Se guardan las desactivadas: 0 = todo activado.
+#define CFG_SIN_LOGO            1
+#define CFG_SIN_RADIO           2
+#define CFG_SIN_AVISOS          4
+#define CFG_SIN_MUSICA          8
 
 // Rangos de admin (users.admin_nivel). El CEO solo se asigna en la base.
 #define RANGO_NINGUNO           0
@@ -43,8 +53,12 @@
 #define EMBED_HUMANO            "{00CC00}"
 #define EMBED_ZOMBIE            "{FFFFFF}"
 
-// Clima: niebla
+// Musica del selector de skin (MP3 con link directo; el cliente 0.3.7 prefiere http)
+#define MUSICA_SELECTOR         "https://files.catbox.moe/fpbvi0.mp3"
+
+// Clima y hora del servidor (cada jugador puede cambiarlos para si con /config)
 #define CLIMA_NIEBLA            9
+#define HORA_SERVIDOR           12
 
 // Kit de armas de los humanos al spawnear
 #define MUNICION_AK47           300
@@ -67,7 +81,7 @@
 #define REGEN_INTERVALO         2000    // ms
 const Float:REGEN_CANTIDAD = 10.0;      // vida y chaleco por intervalo
 
-// Grove Street (Los Santos): lugar del selector de skin y spawn
+// Grove Street (Los Santos): spawn
 // de respaldo si un bando no tiene spawns cargados
 const Float:SPAWN_INICIAL_X = 2495.0;
 const Float:SPAWN_INICIAL_Y = -1687.0;

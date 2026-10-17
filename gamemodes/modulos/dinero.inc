@@ -5,27 +5,10 @@
 
 #define DINERO_MAXIMO           999999999       // lo maximo que muestra el HUD
 
-forward AlRevisarColumnaDinero();
-
 // Agrega la columna users.dinero si la base es anterior a este sistema
 Dinero_PrepararTabla()
 {
-    mysql_tquery(gMySQL,
-        "SELECT COUNT(*) FROM information_schema.COLUMNS \
-         WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND COLUMN_NAME = 'dinero'",
-        "AlRevisarColumnaDinero");
-}
-
-public AlRevisarColumnaDinero()
-{
-    new existe;
-    cache_get_value_index_int(0, 0, existe);
-    if (!existe)
-    {
-        mysql_tquery(gMySQL, "ALTER TABLE users ADD COLUMN dinero INT NOT NULL DEFAULT 0 AFTER score");
-        print("[Dinero] Columna users.dinero creada.");
-    }
-    return 1;
+    MySQL_AsegurarColumna("users", "dinero", "INT NOT NULL DEFAULT 0 AFTER score");
 }
 
 Dinero_Obtener(playerid)

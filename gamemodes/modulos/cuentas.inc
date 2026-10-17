@@ -62,7 +62,7 @@ Cuentas_AlConectar(playerid)
     new nombre[MAX_PLAYER_NAME + 1], consulta[160];
     GetPlayerName(playerid, nombre, sizeof(nombre));
     mysql_format(gMySQL, consulta, sizeof(consulta),
-        "SELECT id, password_hash, salt, vida, dinero, admin_nivel FROM users WHERE nombre = '%e' LIMIT 1",
+        "SELECT id, password_hash, salt, vida, dinero, admin_nivel, cfg_clima, cfg_hora, cfg_flags FROM users WHERE nombre = '%e' LIMIT 1",
         nombre);
     mysql_tquery(gMySQL, consulta, "AlCargarCuenta", "dd", playerid, gContadorConsulta[playerid]);
 }
@@ -80,6 +80,9 @@ public AlCargarCuenta(playerid, contador)
         cache_get_value_name_float(0, "vida", gJugador[playerid][jVida]);
         cache_get_value_name_int(0, "dinero", gJugador[playerid][jDinero]);
         cache_get_value_name_int(0, "admin_nivel", gJugador[playerid][jAdminNivel]);
+        cache_get_value_name_int(0, "cfg_clima", gJugador[playerid][jCfgClima]);
+        cache_get_value_name_int(0, "cfg_hora", gJugador[playerid][jCfgHora]);
+        cache_get_value_name_int(0, "cfg_flags", gJugador[playerid][jCfgFlags]);
         if (gJugador[playerid][jVida] <= 0.0) gJugador[playerid][jVida] = 100.0;
 
         MostrarLogin(playerid, "");
@@ -215,6 +218,7 @@ IniciarSesion(playerid)
     SendClientMessage(playerid, COLOR_INFO, "Elegi tu skin con las flechas. Los skins de zombie te ponen en el bando Zombie.");
     ForceClassSelection(playerid);
     TogglePlayerSpectating(playerid, false);
+    Bando_IniciarMusica(playerid);
 }
 
 // Al aparecer: en un spawn al azar de su bando, con la vida guardada
@@ -249,16 +253,20 @@ GuardarCuenta(playerid)
     // Si todavia esta en el selector no hay nada nuevo que guardar
     if (!gJugador[playerid][jLogueado] || !gJugador[playerid][jEnJuego]) return 0;
 
-    new consulta[160], bando[8], Float:vida;
+    new consulta[256], bando[8], Float:vida;
     Bando_Texto(gJugador[playerid][jBando], bando);
     GetPlayerHealth(playerid, vida);
 
-    // Si murio, la proxima vez entra con vida llena
-    if (gJugador[playerid][jMuerto] || vida <= 0.0) vida = 100.0;
+    // Si murio, la proxima vez entra con vida llena. Nunca mas de 100
+    // (mientras vuela con /fly la vida es infinita).
+    if (gJugador[playerid][jMuerto] || vida <= 0.0 || vida > 100.0) vida = 100.0;
 
     mysql_format(gMySQL, consulta, sizeof(consulta),
-        "UPDATE users SET bando = '%e', skin = %d, vida = %f, dinero = %d WHERE id = %d",
-        bando, gJugador[playerid][jSkin], vida, gJugador[playerid][jDinero], gJugador[playerid][jId]);
+        "UPDATE users SET bando = '%e', skin = %d, vida = %f, dinero = %d, \
+         cfg_clima = %d, cfg_hora = %d, cfg_flags = %d WHERE id = %d",
+        bando, gJugador[playerid][jSkin], vida, gJugador[playerid][jDinero],
+        gJugador[playerid][jCfgClima], gJugador[playerid][jCfgHora], gJugador[playerid][jCfgFlags],
+        gJugador[playerid][jId]);
     mysql_tquery(gMySQL, consulta);
     return 1;
 }

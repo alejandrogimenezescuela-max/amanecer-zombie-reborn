@@ -47,6 +47,9 @@ CREATE TABLE IF NOT EXISTS users (
     angulo          FLOAT        NULL,
     score           INT          NOT NULL DEFAULT 0,
     dinero          INT          NOT NULL DEFAULT 0,      -- el gamemode la agrega si falta
+    cfg_clima       TINYINT      NOT NULL DEFAULT -1,     -- /config (-1 = el del servidor)
+    cfg_hora        TINYINT      NOT NULL DEFAULT -1,
+    cfg_flags       INT          NOT NULL DEFAULT 0,      -- opciones desactivadas (CFG_SIN_*)
     kills           INT UNSIGNED NOT NULL DEFAULT 0,
     muertes         INT UNSIGNED NOT NULL DEFAULT 0,
 

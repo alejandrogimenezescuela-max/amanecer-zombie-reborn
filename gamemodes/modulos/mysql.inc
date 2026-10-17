@@ -21,6 +21,34 @@ MySQL_Conectar()
     }
 }
 
+forward AlRevisarColumna(tabla[], columna[], definicion[]);
+
+// Agrega la columna si la base es anterior al sistema que la usa (MySQL 8 no
+// tiene ADD COLUMN IF NOT EXISTS, asi que primero se pregunta si existe)
+MySQL_AsegurarColumna(const tabla[], const columna[], const definicion[])
+{
+    new consulta[256];
+    mysql_format(gMySQL, consulta, sizeof(consulta),
+        "SELECT COUNT(*) FROM information_schema.COLUMNS \
+         WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '%e' AND COLUMN_NAME = '%e'",
+        tabla, columna);
+    mysql_tquery(gMySQL, consulta, "AlRevisarColumna", "sss", tabla, columna, definicion);
+}
+
+public AlRevisarColumna(tabla[], columna[], definicion[])
+{
+    new existe;
+    cache_get_value_index_int(0, 0, existe);
+    if (!existe)
+    {
+        new consulta[256];
+        format(consulta, sizeof(consulta), "ALTER TABLE %s ADD COLUMN %s %s", tabla, columna, definicion);
+        mysql_tquery(gMySQL, consulta);
+        printf("[MySQL] Columna %s.%s creada.", tabla, columna);
+    }
+    return 1;
+}
+
 MySQL_Cerrar()
 {
     // mysql_close espera a que terminen las consultas pendientes

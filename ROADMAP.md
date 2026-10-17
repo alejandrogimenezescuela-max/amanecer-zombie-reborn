@@ -36,6 +36,11 @@ Marcá cada tarea con `[x]` a medida que la completes.
 - [x] Rangos de admin en `users.admin_nivel`: Moderador, Administrador y CEO; `/admin` y `/daradmin`
 - [x] CEO: skin 155, manos de fuego con regeneración, `/cure`, `/virus`, `/dardinero` y herramientas de spawns
 - [x] RCON sin poderes dentro del juego (contraseña aleatoria)
+- [x] `/fly` para Administrador y CEO (vida infinita mientras vuela)
+- [x] Selector de skin en el lobby de Zombotech (San Fierro) con música de fondo
+- [x] Logo "Amanecer Zombie Reborn" arriba del minimapa (textdraws)
+- [x] Radio transmisor cada 5 minutos y `/park` para ir al skatepark
+- [x] `/config`: clima, hora, logo, radio, avisos y música por jugador (guardado en la cuenta)
 - [ ] Cura en el skatepark de Los Santos (por ahora solo la cámara del login lo muestra)
 - [ ] Definir cómo se gana dinero jugando
 - [ ] Definir qué comandos tienen Moderador y Administrador
