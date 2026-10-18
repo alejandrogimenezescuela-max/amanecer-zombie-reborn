@@ -98,6 +98,20 @@ CREATE TABLE IF NOT EXISTS spawns (
 ) ENGINE=InnoDB;
 
 -- ------------------------------------------------------------
+--  Ajustes de las manos de fuego del CEO por postura
+--  (arma 0 = manos sueltas; mano 0 = izquierda, 1 = derecha).
+--  El gamemode tambien la crea si no existe.
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS fuego_ajustes (
+    arma            TINYINT UNSIGNED NOT NULL,
+    mano            TINYINT UNSIGNED NOT NULL,
+    x FLOAT NOT NULL, y FLOAT NOT NULL, z FLOAT NOT NULL,
+    rx FLOAT NOT NULL, ry FLOAT NOT NULL, rz FLOAT NOT NULL,
+    sx FLOAT NOT NULL, sy FLOAT NOT NULL, sz FLOAT NOT NULL,
+    PRIMARY KEY (arma, mano)
+) ENGINE=InnoDB;
+
+-- ------------------------------------------------------------
 --  Lista de baneos (por cuenta, IP, subred, GPCI y Discord)
 -- ------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS banlist (

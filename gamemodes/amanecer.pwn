@@ -11,8 +11,12 @@
 #include "modulos/spawns.inc"
 #include "modulos/cuentas.inc"
 #include "modulos/admin.inc"
+#include "modulos/fuego.inc"
 #include "modulos/conexiones.inc"
+#include "modulos/galeria.inc"
 #include "modulos/items.inc"
+#include "modulos/armas.inc"
+#include "modulos/autos.inc"
 #include "modulos/efectos.inc"
 #include "modulos/vuelo.inc"
 #include "modulos/interfaz.inc"
@@ -35,6 +39,7 @@ public OnGameModeInit()
     Bando_CrearClases();
     Spawns_Cargar();
     Admin_Iniciar();
+    Fuego_Iniciar();
     Interfaz_Crear();
     Parque_Iniciar();
     return 1;
@@ -63,8 +68,10 @@ public OnPlayerConnect(playerid)
 public OnPlayerDisconnect(playerid, reason)
 {
     Conexion_AlSalir(playerid, reason);
-    Items_Cerrar(playerid);
+    Galeria_Cerrar(playerid);
     Vuelo_Desactivar(playerid);
+    Fuego_AlSalir(playerid);
+    Autos_AlSalir(playerid);
     GuardarCuenta(playerid);
     gContadorConsulta[playerid]++;
     ReiniciarDatos(playerid);
@@ -76,6 +83,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
     if (Cuentas_AlResponderDialogo(playerid, dialogid, response, inputtext)) return 1;
     if (Spawns_AlResponderDialogo(playerid, dialogid, response, listitem)) return 1;
     if (Items_AlResponderDialogo(playerid, dialogid, response, listitem)) return 1;
+    if (Armas_AlResponderDialogo(playerid, dialogid, response, listitem)) return 1;
     if (Ajustes_AlResponderDialogo(playerid, dialogid, response, listitem)) return 1;
     return 0;
 }
@@ -85,7 +93,10 @@ public OnPlayerCommandText(playerid, cmdtext[])
     if (!gJugador[playerid][jLogueado]) return 1;
     if (Spawns_AlComando(playerid, cmdtext)) return 1;
     if (Admin_AlComando(playerid, cmdtext)) return 1;
+    if (Fuego_AlComando(playerid, cmdtext)) return 1;
     if (Items_AlComando(playerid, cmdtext)) return 1;
+    if (Armas_AlComando(playerid, cmdtext)) return 1;
+    if (Autos_AlComando(playerid, cmdtext)) return 1;
     if (Vuelo_AlComando(playerid, cmdtext)) return 1;
     if (Parque_AlComando(playerid, cmdtext)) return 1;
     if (Ajustes_AlComando(playerid, cmdtext)) return 1;
@@ -94,27 +105,27 @@ public OnPlayerCommandText(playerid, cmdtext[])
 
 public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid)
 {
-    if (Items_AlClicTextDraw(playerid, playertextid)) return 1;
+    if (Galeria_AlClicTextDraw(playerid, playertextid)) return 1;
     return 0;
 }
 
 public OnPlayerUpdate(playerid)
 {
-    Admin_AlActualizar(playerid);
+    Fuego_AlActualizar(playerid);
     Vuelo_AlActualizar(playerid);
     return 1;   // devolver 0 bloquearia la sincronizacion del jugador
 }
 
 public OnPlayerEditAttachedObject(playerid, EDIT_RESPONSE:response, index, modelid, boneid, Float:fOffsetX, Float:fOffsetY, Float:fOffsetZ, Float:fRotX, Float:fRotY, Float:fRotZ, Float:fScaleX, Float:fScaleY, Float:fScaleZ)
 {
-    Admin_AlEditarObjeto(playerid, response, index, fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ, fScaleX, fScaleY, fScaleZ);
+    Fuego_AlEditarObjeto(playerid, response, index, fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ, fScaleX, fScaleY, fScaleZ);
     return 1;
 }
 
 public OnPlayerClickTextDraw(playerid, Text:clickedid)
 {
     // INVALID_TEXT_DRAW = el jugador apreto ESC durante la seleccion
-    if (clickedid == INVALID_TEXT_DRAW) Items_AlCancelarSeleccion(playerid);
+    if (clickedid == INVALID_TEXT_DRAW) Galeria_AlCancelarSeleccion(playerid);
     return 0;
 }
 
@@ -180,10 +191,16 @@ public OnPlayerDeath(playerid, killerid, WEAPON:reason)
 {
     if (!gJugador[playerid][jLogueado]) return 1;
 
-    Items_Cerrar(playerid);
+    Galeria_Cerrar(playerid);
     Vuelo_Desactivar(playerid);
     Efectos_AlMorir(playerid);
     Cuentas_AlMorir(playerid);
     Bando_AlMorir(playerid);
+    return 1;
+}
+
+public OnVehicleDeath(vehicleid, killerid)
+{
+    Autos_AlMorirVehiculo(vehicleid);
     return 1;
 }

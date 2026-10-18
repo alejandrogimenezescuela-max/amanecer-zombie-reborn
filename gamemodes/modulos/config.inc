@@ -11,6 +11,7 @@
 #define DIALOGO_CONFIG          6
 #define DIALOGO_CONFIG_CLIMA    7
 #define DIALOGO_CONFIG_HORA     8
+#define DIALOGO_ARMAS           9
 
 // Opciones de /config que el jugador puede apagar (bits de users.cfg_flags).
 // Se guardan las desactivadas: 0 = todo activado.
@@ -67,6 +68,7 @@
 
 // Skin automatico del CEO
 #define SKIN_ADMIN              155
+#define MUNICION_RPG_CEO        10      // el CEO spawnea con un RPG
 
 // Particula que aparece donde muere un jugador
 #define MODELO_EFECTO_MUERTE    18668

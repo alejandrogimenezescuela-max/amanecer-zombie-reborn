@@ -1,22 +1,10 @@
 // ------------------------------------------------------------
-//  Admins: rangos, skin y manos de fuego del CEO, y comandos.
+//  Admins: rangos, skin y regeneracion del CEO, y comandos.
+//  Las particulas de las manos de fuego estan en fuego.inc.
 //  El login RCON no da ningun poder dentro del juego.
 // ------------------------------------------------------------
 
 forward RegenerarAdmins();
-
-// Posicion de las particulas sobre cada mano (0 = izquierda, 1 = derecha):
-// x, y, z, rotX, rotY, rotZ, escalaX, escalaY, escalaZ. El modelo 18693 tiene el
-// origen corrido ~1.5 m de la llama, por eso los valores grandes. Ajustados en el
-// juego con /editarfuego (manos sueltas, sin arma de dos manos).
-static Float:gFuegoAjuste[2][9] =
-{
-    { 1.504, 0.483, -0.897,   0.0, -68.1, -49.8, 1.0, 1.0, 1.0 },
-    { 1.680, 0.722,  0.324, 141.6, -80.7,   9.6, 1.0, 1.0, 1.0 }
-};
-
-// Si las llamas estan pegadas ahora (se esconden al apuntar o con armas de dos manos)
-static bool:gFuegoVisible[MAX_PLAYERS];
 
 // Timer de regeneracion para los admins con manos de fuego
 Admin_Iniciar()
@@ -31,56 +19,8 @@ Admin_AlSpawnear(playerid)
 
     gJugador[playerid][jSkin] = SKIN_ADMIN;
     SetPlayerSkin(playerid, SKIN_ADMIN);
-    PonerManosDeFuego(playerid);
-}
-
-static PonerManosDeFuego(playerid)
-{
-    PegarFuego(playerid, SLOT_FUEGO_IZQ, HUESO_MANO_IZQ, 0);
-    PegarFuego(playerid, SLOT_FUEGO_DER, HUESO_MANO_DER, 1);
-    gFuegoVisible[playerid] = true;
-}
-
-static SacarManosDeFuego(playerid)
-{
-    RemovePlayerAttachedObject(playerid, SLOT_FUEGO_IZQ);
-    RemovePlayerAttachedObject(playerid, SLOT_FUEGO_DER);
-    gFuegoVisible[playerid] = false;
-}
-
-static bool:EsArmaDeDosManos(WEAPON:arma)
-{
-    switch (arma)
-    {
-        case WEAPON_SHOTGUN, WEAPON_SHOTGSPA, WEAPON_MP5, WEAPON_AK47, WEAPON_M4,
-             WEAPON_RIFLE, WEAPON_SNIPER, WEAPON_ROCKETLAUNCHER, WEAPON_HEATSEEKER,
-             WEAPON_FLAMETHROWER, WEAPON_MINIGUN:
-            return true;
-    }
-    return false;
-}
-
-// Al girar la mano (apuntar o sostener un arma de dos manos) la llama se
-// desplaza lejos porque esta a ~1.5 m del hueso: en esos casos se esconde.
-Admin_AlActualizar(playerid)
-{
-    if (!EsCEO(playerid) || !gJugador[playerid][jEnJuego]) return;
-    if (GetPlayerState(playerid) != PLAYER_STATE_ONFOOT) return;
-
-    new KEY:teclas, arriba, costado;
-    GetPlayerKeys(playerid, teclas, arriba, costado);
-    new bool:mostrar = !(teclas & KEY_AIM) && !EsArmaDeDosManos(GetPlayerWeapon(playerid));
-
-    if (mostrar && !gFuegoVisible[playerid]) PonerManosDeFuego(playerid);
-    else if (!mostrar && gFuegoVisible[playerid]) SacarManosDeFuego(playerid);
-}
-
-static PegarFuego(playerid, slot, hueso, mano)
-{
-    SetPlayerAttachedObject(playerid, slot, MODELO_FUEGO, hueso,
-        gFuegoAjuste[mano][0], gFuegoAjuste[mano][1], gFuegoAjuste[mano][2],
-        gFuegoAjuste[mano][3], gFuegoAjuste[mano][4], gFuegoAjuste[mano][5],
-        gFuegoAjuste[mano][6], gFuegoAjuste[mano][7], gFuegoAjuste[mano][8]);
+    GivePlayerWeapon(playerid, WEAPON_ROCKETLAUNCHER, MUNICION_RPG_CEO);
+    Fuego_Encender(playerid);
 }
 
 // Cada REGEN_INTERVALO: +10 de vida y +10 de chaleco, hasta 100
@@ -110,34 +50,6 @@ public RegenerarAdmins()
     return 1;
 }
 
-// Resultado de /editarfuego: guarda el ajuste de la mano editada (dura hasta reiniciar)
-Admin_AlEditarObjeto(playerid, EDIT_RESPONSE:respuesta, slot,
-    Float:x, Float:y, Float:z, Float:rx, Float:ry, Float:rz, Float:sx, Float:sy, Float:sz)
-{
-    if (slot != SLOT_FUEGO_IZQ && slot != SLOT_FUEGO_DER) return 0;
-    // El ajuste es global: un cliente modificado podria mandar una edicion falsa
-    if (!EsCEO(playerid)) return 1;
-
-    new mano = (slot == SLOT_FUEGO_IZQ) ? 0 : 1;
-    if (respuesta == EDIT_RESPONSE_FINAL)
-    {
-        gFuegoAjuste[mano][0] = x;  gFuegoAjuste[mano][1] = y;  gFuegoAjuste[mano][2] = z;
-        gFuegoAjuste[mano][3] = rx; gFuegoAjuste[mano][4] = ry; gFuegoAjuste[mano][5] = rz;
-        gFuegoAjuste[mano][6] = sx; gFuegoAjuste[mano][7] = sy; gFuegoAjuste[mano][8] = sz;
-
-        // Se muestran para dejarlos fijos en el codigo
-        new mensaje[144];
-        format(mensaje, sizeof(mensaje), "Fuego mano %s: { %.3f, %.3f, %.3f, %.1f, %.1f, %.1f, %.2f, %.2f, %.2f }",
-            (mano == 0) ? ("izq") : ("der"), x, y, z, rx, ry, rz, sx, sy, sz);
-        SendClientMessage(playerid, COLOR_INFO, mensaje);
-        printf("[Admin] %s", mensaje);
-    }
-
-    // Se vuelve a pegar con el ajuste guardado (al cancelar, el anterior)
-    PegarFuego(playerid, slot, (mano == 0) ? HUESO_MANO_IZQ : HUESO_MANO_DER, mano);
-    return 1;
-}
-
 // Devuelve 1 si el comando era de este modulo
 Admin_AlComando(playerid, const cmdtext[])
 {
@@ -146,7 +58,6 @@ Admin_AlComando(playerid, const cmdtext[])
     if (!strcmp(comando, "/admin", true) || !strcmp(comando, "/admins", true)) return ComandoListaAdmins(playerid);
     if (!strcmp(comando, "/daradmin", true)) return ComandoDarAdmin(playerid, cmdtext);
     if (!strcmp(comando, "/dardinero", true)) return ComandoDarDinero(playerid, cmdtext);
-    if (!strcmp(comando, "/editarfuego", true)) return ComandoEditarFuego(playerid, cmdtext);
 
     new bool:esCura = !strcmp(comando, "/cure", true);
     if (!esCura && strcmp(comando, "/virus", true)) return 0;
@@ -301,23 +212,6 @@ static ComandoDarAdmin(playerid, const cmdtext[])
             SendClientMessage(objetivo, COLOR_INFO, mensaje);
         }
     }
-    return 1;
-}
-
-// /editarfuego [izq|der]: mover las particulas con el mouse
-static ComandoEditarFuego(playerid, const cmdtext[])
-{
-    if (!EsCEO(playerid))
-    {
-        SendClientMessage(playerid, COLOR_ERROR, "No tenes permiso para usar este comando.");
-        return 1;
-    }
-
-    new mano[8];
-    ObtenerParametro(cmdtext, 1, mano);
-    if (!strcmp(mano, "izq", true)) EditAttachedObject(playerid, SLOT_FUEGO_IZQ);
-    else if (!strcmp(mano, "der", true)) EditAttachedObject(playerid, SLOT_FUEGO_DER);
-    else SendClientMessage(playerid, COLOR_INFO, "Uso: /editarfuego [izq|der]. Guarda con el disquete, ESC cancela.");
     return 1;
 }
 

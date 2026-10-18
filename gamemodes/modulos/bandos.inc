@@ -131,7 +131,7 @@ Bando_MostrarSkin(playerid, classid)
     PlayerTextDrawShow(playerid, gJugador[playerid][jTextoBando]);
 }
 
-// Musica de fondo mientras elige skin (se llama una vez al entrar al selector)
+// Musica de fondo desde el login hasta que spawnea (se llama una vez)
 Bando_IniciarMusica(playerid)
 {
     if (Ajustes_Activado(playerid, CFG_SIN_MUSICA)) PlayAudioStreamForPlayer(playerid, MUSICA_SELECTOR);

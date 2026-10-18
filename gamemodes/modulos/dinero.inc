@@ -29,6 +29,26 @@ Dinero_Dar(playerid, monto)
     Dinero_Sincronizar(playerid);
 }
 
+// Descuenta el precio si le alcanza; si no, avisa y devuelve false.
+// 'item' va en el mensaje: "Compraste el antidoto por $150.000."
+bool:Dinero_Cobrar(playerid, precio, const item[])
+{
+    new texto[20], mensaje[96];
+    FormatearDinero(precio, texto);
+
+    if (Dinero_Obtener(playerid) < precio)
+    {
+        format(mensaje, sizeof(mensaje), "No tenes dinero suficiente: %s cuesta %s.", item, texto);
+        SendClientMessage(playerid, COLOR_ERROR, mensaje);
+        return false;
+    }
+
+    Dinero_Dar(playerid, -precio);
+    format(mensaje, sizeof(mensaje), "Compraste %s por %s.", item, texto);
+    SendClientMessage(playerid, COLOR_INFO, mensaje);
+    return true;
+}
+
 // Muestra en el HUD el valor del servidor (al morir el GTA descuenta $100 por su cuenta)
 Dinero_Sincronizar(playerid)
 {

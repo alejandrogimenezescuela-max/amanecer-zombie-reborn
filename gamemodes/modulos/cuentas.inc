@@ -91,6 +91,9 @@ public AlCargarCuenta(playerid, contador)
     {
         MostrarRegistro(playerid, "");
     }
+
+    // La musica suena desde el login hasta que spawnea (con los ajustes ya cargados)
+    Bando_IniciarMusica(playerid);
     return 1;
 }
 
@@ -218,7 +221,6 @@ IniciarSesion(playerid)
     SendClientMessage(playerid, COLOR_INFO, "Elegi tu skin con las flechas. Los skins de zombie te ponen en el bando Zombie.");
     ForceClassSelection(playerid);
     TogglePlayerSpectating(playerid, false);
-    Bando_IniciarMusica(playerid);
 }
 
 // Al aparecer: en un spawn al azar de su bando, con la vida guardada
