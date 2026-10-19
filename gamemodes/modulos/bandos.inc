@@ -54,7 +54,7 @@ Bando_Texto(E_BANDO:bando, texto[], largo = sizeof(texto))
 // Una clase por cada skin valido, todas en Grove Street. Orden del selector:
 // un humano, los zombies seguidos y despues el resto de los humanos. Asi la
 // flecha derecha recorre los zombies y la izquierda da la vuelta a los humanos.
-// El skin 0 (CJ) no se puede elegir.
+// No se pueden elegir el skin 0 (CJ) ni el del Nemesis.
 Bando_CrearClases()
 {
     AgregarClase(1);
@@ -67,7 +67,7 @@ Bando_CrearClases()
 
     for (new skin = 2; skin <= MAX_SKIN; skin++)
     {
-        if (skin == SKIN_INVALIDO || Bando_DeSkin(skin) == BANDO_ZOMBIE) continue;
+        if (skin == SKIN_INVALIDO || skin == SKIN_NEMESIS || Bando_DeSkin(skin) == BANDO_ZOMBIE) continue;
         AgregarClase(skin);
         gSkinsHumano[gTotalSkinsHumano++] = skin;
     }
@@ -204,11 +204,13 @@ static AvisarATodos(color, const mensaje[])
 }
 
 // Vuelve a ser humano: el skin que eligio en el selector si era de humano,
-// si no uno de humano al azar. Recibe el kit y vida llena.
-Bando_Curar(playerid)
+// si no uno de humano al azar. Recibe el kit y vida llena. Con 'presentacion'
+// en false no se muestran los mensajes del spawn (el "Eres un humano..." y la frase).
+Bando_Curar(playerid, bool:presentacion = true)
 {
+    Nemesis_Terminar(playerid);     // /cure tambien saca el Nemesis
     new skin = gJugador[playerid][jSkinSeleccion];
-    while (skin == 0 || skin == SKIN_INVALIDO || Bando_DeSkin(skin) == BANDO_ZOMBIE)
+    while (skin == 0 || skin == SKIN_INVALIDO || skin == SKIN_NEMESIS || Bando_DeSkin(skin) == BANDO_ZOMBIE)
     {
         skin = 1 + random(MAX_SKIN);
     }
@@ -223,7 +225,7 @@ Bando_Curar(playerid)
     AvisarATodos(COLOR_HUMANO, mensaje);
     SendClientMessage(playerid, COLOR_HUMANO, "Te curaron. Vuelves a ser humano.");
 
-    AplicarBando(playerid);
+    AplicarBando(playerid, presentacion);
 }
 
 Bando_AlSpawnear(playerid)
@@ -234,7 +236,7 @@ Bando_AlSpawnear(playerid)
 
 // Skin, color del nombre y del radar segun el bando. Los humanos reciben el
 // kit de armas y dicen una frase; los zombies van sin armas.
-static AplicarBando(playerid)
+static AplicarBando(playerid, bool:presentacion = true)
 {
     new E_BANDO:bando = gJugador[playerid][jBando];
     SetPlayerSkin(playerid, gJugador[playerid][jSkin]);
@@ -247,25 +249,36 @@ static AplicarBando(playerid)
         GivePlayerWeapon(playerid, WEAPON_MP5, MUNICION_MP5);
         GivePlayerWeapon(playerid, WEAPON_DEAGLE, MUNICION_DEAGLE);
 
-        SendClientMessage(playerid, COLOR_HUMANO, "Eres un humano, intenta sobrevivir a la infeccion.");
-        DecirFraseHumano(playerid);
+        if (presentacion)
+        {
+            SendClientMessage(playerid, COLOR_HUMANO, "Eres un humano, intenta sobrevivir a la infeccion.");
+            DecirFraseHumano(playerid);
+        }
     }
-    else
+    else if (presentacion)
     {
         SendClientMessage(playerid, COLOR_INFECTADO, "Eres un zombie, busca otros humanos para infectar.");
     }
 }
 
-// Chat: el nombre en verde si es humano o en blanco si es zombie
+// Color del nick para insertar en un texto: verde humano, blanco zombie, rojo Nemesis
+Bando_EmbedNick(playerid, destino[], largo = sizeof(destino))
+{
+    if (Nemesis_Es(playerid)) format(destino, largo, EMBED_NEMESIS);
+    else if (gJugador[playerid][jBando] == BANDO_ZOMBIE) format(destino, largo, EMBED_ZOMBIE);
+    else format(destino, largo, EMBED_HUMANO);
+}
+
+// Chat: el nick con el color de su bando y el texto en blanco
 Bando_AlHablar(playerid, const texto[])
 {
-    new nombre[MAX_PLAYER_NAME + 1], mensaje[144], limpio[144];
+    new nombre[MAX_PLAYER_NAME + 1], color[12], mensaje[144], limpio[144];
     GetPlayerName(playerid, nombre, sizeof(nombre));
+    Bando_EmbedNick(playerid, color);
     strcat(limpio, texto);
     LimpiarColores(limpio);
 
-    format(mensaje, sizeof(mensaje), "%s%s: {DDDDDD}%s",
-        (gJugador[playerid][jBando] == BANDO_ZOMBIE) ? (EMBED_ZOMBIE) : (EMBED_HUMANO), nombre, limpio);
+    format(mensaje, sizeof(mensaje), "%s%s: {FFFFFF}%s", color, nombre, limpio);
     SendClientMessageToAll(COLOR_INFO, mensaje);
 }
 
@@ -290,6 +303,6 @@ static DecirFraseHumano(playerid)
     SetPlayerChatBubble(playerid, gFrasesHumano[frase], COLOR_HUMANO, 30.0, 6000);
 
     GetPlayerName(playerid, nombre, sizeof(nombre));
-    format(mensaje, sizeof(mensaje), EMBED_HUMANO "%s: {DDDDDD}%s", nombre, gFrasesHumano[frase]);
+    format(mensaje, sizeof(mensaje), EMBED_HUMANO "%s: {FFFFFF}%s", nombre, gFrasesHumano[frase]);
     SendClientMessage(playerid, COLOR_INFO, mensaje);
 }

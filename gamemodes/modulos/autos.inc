@@ -20,6 +20,16 @@ static const gAutosNombre[][] =
     "Savanna", "Landstalker", "Huntley", "Sultan", "Comet", "Cheetah", "Infernus"
 };
 
+// Colores de cada auto (carroceria, detalles) con los ids de color del GTA:
+// 0 negro, 1 blanco, 2 celeste, 3 rojo, 6 amarillo, 16 verde oscuro, 79 azul,
+// 86 verde, 126 rosa. Se usan en la vista previa y en el auto que se compra.
+static const gAutosColor[][2] =
+{
+    { 3, 1 },   { 79, 1 },  { 6, 0 },   { 16, 1 },  { 2, 1 },
+    { 126, 1 }, { 0, 3 },   { 1, 79 },  { 86, 0 },  { 0, 0 },
+    { 1, 1 },   { 79, 0 },  { 3, 0 },   { 6, 6 },   { 3, 3 }
+};
+
 static gAutoDe[MAX_PLAYERS];            // vehiculo de cada jugador (0 = ninguno)
 
 forward BorrarAutoExplotado(vehiculo);
@@ -34,6 +44,12 @@ Autos_Total()
 Autos_Modelo(indice)
 {
     return gAutosModelo[indice];
+}
+
+Autos_Colores(indice, &color1, &color2)
+{
+    color1 = gAutosColor[indice][0];
+    color2 = gAutosColor[indice][1];
 }
 
 // "Sultan~n~$65.000" (~n~ = salto de linea en un textdraw)
@@ -79,8 +95,9 @@ Autos_Comprar(playerid, indice)
     GetPlayerPos(playerid, x, y, z);
     GetPlayerFacingAngle(playerid, angulo);
 
-    // Colores al azar (-1) y sin reaparecer (-1): es del jugador, no del mapa
-    new vehiculo = CreateVehicle(gAutosModelo[indice], x, y, z + 0.5, angulo, -1, -1, -1);
+    // Los mismos colores de la vista previa; sin reaparecer (-1): es del jugador, no del mapa
+    new vehiculo = CreateVehicle(gAutosModelo[indice], x, y, z + 0.5, angulo,
+        gAutosColor[indice][0], gAutosColor[indice][1], -1);
     if (vehiculo == INVALID_VEHICLE_ID)
     {
         gAutoDe[playerid] = 0;

@@ -22,6 +22,9 @@ enum E_JUGADOR
     Float:jVida,
     jDinero,                // el valor real; el del GTA es solo para mostrar
     jAdminNivel,            // rango guardado (RANGO_*); ver Admin_Rango
+    jVipNivel,              // users.vip_nivel (todavia no hay sistema VIP)
+    jScore,                 // score guardado; se aplica al iniciar sesion
+    bool:jSinLuz,           // /luz: oculta manos de fuego y efecto de Nemesis
     jCfgClima,              // /config: -1 = el del servidor
     jCfgHora,               // /config: -1 = la del servidor
     jCfgFlags,              // /config: opciones desactivadas (CFG_SIN_*)
@@ -55,6 +58,9 @@ ReiniciarDatos(playerid)
     gJugador[playerid][jVida] = 100.0;
     gJugador[playerid][jDinero] = 0;
     gJugador[playerid][jAdminNivel] = RANGO_NINGUNO;
+    gJugador[playerid][jVipNivel] = 0;
+    gJugador[playerid][jScore] = 0;
+    gJugador[playerid][jSinLuz] = false;
     gJugador[playerid][jCfgClima] = -1;
     gJugador[playerid][jCfgHora] = -1;
     gJugador[playerid][jCfgFlags] = 0;

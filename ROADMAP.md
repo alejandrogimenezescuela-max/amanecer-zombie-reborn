@@ -44,9 +44,16 @@ Marcá cada tarea con `[x]` a medida que la completes.
 - [x] Radio transmisor cada 5 minutos y `/park` para ir al skatepark
 - [x] `/config`: clima, hora, logo, radio, avisos y música por jugador (guardado en la cuenta)
 - [x] `/armas`: tienda de armas para humanos (+500 balas por compra, se suman) y motosierra para zombies
-- [x] `/autos`: 15 autos comunes con vista previa, nombre y precio (un auto por jugador)
-- [ ] Definir el precio de la motosierra (provisorio: $10.000) y confirmar los precios de los autos
-- [ ] Cura en el skatepark de Los Santos (por ahora solo la cámara del login lo muestra)
+- [x] `/autos`: 15 autos comunes con vista previa en colores, nombre y precio (un auto por jugador)
+- [x] `/id`: datos de un jugador (bando, rango, VIP, dinero y score); score guardado en la cuenta
+- [x] Cambio de skin con `/item` con espera de 3 minutos
+- [x] Chat y frases con el nick del color del bando (verde humano, blanco zombie, rojo Nemesis) y texto en blanco
+- [x] **Virus Nemesis**: pickup que se compra con 5000 de score; zombie con skin exclusivo 17, RPG infinito, 5000 de vida virtual, 100 de chaleco y efecto propio (`/editarnemesis`)
+- [x] `/luz` para ocultar o mostrar las manos de fuego y el efecto del Nemesis
+- [x] Mapeos rescatados del servidor original (1140 objetos) con el plugin Streamer
+- [x] Precios de /armas copiados del servidor original (AK-47 $8.000 y motosierra $3.000 a criterio) y precios de autos confirmados
+- [x] Cura frente al skatepark: checkpoint que cura a los zombies en 5 s ("APLICANDO ANTIDOTO") y cruz roja en el radar; transmision militar cada 5 minutos
+- [ ] Mapear la zona de la cura
 - [ ] Definir cómo se gana dinero jugando
 - [ ] Definir qué comandos tienen Moderador y Administrador
 

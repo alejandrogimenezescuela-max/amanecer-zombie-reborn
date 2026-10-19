@@ -62,7 +62,7 @@ Cuentas_AlConectar(playerid)
     new nombre[MAX_PLAYER_NAME + 1], consulta[160];
     GetPlayerName(playerid, nombre, sizeof(nombre));
     mysql_format(gMySQL, consulta, sizeof(consulta),
-        "SELECT id, password_hash, salt, vida, dinero, admin_nivel, cfg_clima, cfg_hora, cfg_flags FROM users WHERE nombre = '%e' LIMIT 1",
+        "SELECT id, password_hash, salt, vida, dinero, score, admin_nivel, vip_nivel, cfg_clima, cfg_hora, cfg_flags FROM users WHERE nombre = '%e' LIMIT 1",
         nombre);
     mysql_tquery(gMySQL, consulta, "AlCargarCuenta", "dd", playerid, gContadorConsulta[playerid]);
 }
@@ -80,6 +80,8 @@ public AlCargarCuenta(playerid, contador)
         cache_get_value_name_float(0, "vida", gJugador[playerid][jVida]);
         cache_get_value_name_int(0, "dinero", gJugador[playerid][jDinero]);
         cache_get_value_name_int(0, "admin_nivel", gJugador[playerid][jAdminNivel]);
+        cache_get_value_name_int(0, "vip_nivel", gJugador[playerid][jVipNivel]);
+        cache_get_value_name_int(0, "score", gJugador[playerid][jScore]);
         cache_get_value_name_int(0, "cfg_clima", gJugador[playerid][jCfgClima]);
         cache_get_value_name_int(0, "cfg_hora", gJugador[playerid][jCfgHora]);
         cache_get_value_name_int(0, "cfg_flags", gJugador[playerid][jCfgFlags]);
@@ -218,6 +220,7 @@ public AlRegistrarCuenta(playerid, contador)
 IniciarSesion(playerid)
 {
     gJugador[playerid][jLogueado] = true;
+    SetPlayerScore(playerid, gJugador[playerid][jScore]);
     SendClientMessage(playerid, COLOR_INFO, "Elegi tu skin con las flechas. Los skins de zombie te ponen en el bando Zombie.");
     ForceClassSelection(playerid);
     TogglePlayerSpectating(playerid, false);
@@ -265,9 +268,9 @@ GuardarCuenta(playerid)
 
     mysql_format(gMySQL, consulta, sizeof(consulta),
         "UPDATE users SET bando = '%e', skin = %d, vida = %f, dinero = %d, \
-         cfg_clima = %d, cfg_hora = %d, cfg_flags = %d WHERE id = %d",
+         score = %d, cfg_clima = %d, cfg_hora = %d, cfg_flags = %d WHERE id = %d",
         bando, gJugador[playerid][jSkin], vida, gJugador[playerid][jDinero],
-        gJugador[playerid][jCfgClima], gJugador[playerid][jCfgHora], gJugador[playerid][jCfgFlags],
+        GetPlayerScore(playerid), gJugador[playerid][jCfgClima], gJugador[playerid][jCfgHora], gJugador[playerid][jCfgFlags],
         gJugador[playerid][jId]);
     mysql_tquery(gMySQL, consulta);
     return 1;

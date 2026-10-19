@@ -112,6 +112,19 @@ CREATE TABLE IF NOT EXISTS fuego_ajustes (
 ) ENGINE=InnoDB;
 
 -- ------------------------------------------------------------
+--  Ajustes de efectos pegados al cuerpo, uno por efecto:
+--  'nemesis' (efecto 18728 del Nemesis) y mas adelante 'star'.
+--  El gamemode tambien la crea si no existe.
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS efectos_ajustes (
+    nombre          VARCHAR(16)  NOT NULL,
+    x FLOAT NOT NULL, y FLOAT NOT NULL, z FLOAT NOT NULL,
+    rx FLOAT NOT NULL, ry FLOAT NOT NULL, rz FLOAT NOT NULL,
+    sx FLOAT NOT NULL, sy FLOAT NOT NULL, sz FLOAT NOT NULL,
+    PRIMARY KEY (nombre)
+) ENGINE=InnoDB;
+
+-- ------------------------------------------------------------
 --  Lista de baneos (por cuenta, IP, subred, GPCI y Discord)
 -- ------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS banlist (

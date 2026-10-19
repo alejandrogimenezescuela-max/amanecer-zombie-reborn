@@ -183,7 +183,8 @@ static ActualizarFuego(playerid)
 {
     if (gEditando[playerid]) return;
 
-    new postura = PosturaActual(playerid);
+    // Con /luz apagado no se muestra en ninguna postura
+    new postura = gJugador[playerid][jSinLuz] ? -1 : PosturaActual(playerid);
     for (new mano = 0; mano < 2; mano++)
     {
         new deseada = AjusteAUsar(postura, mano);

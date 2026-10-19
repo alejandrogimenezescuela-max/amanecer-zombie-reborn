@@ -1,5 +1,6 @@
 #include <open.mp>
 #include <a_mysql>
+#include <streamer>
 
 // Modulos del gamemode (gamemodes/modulos/)
 #include "modulos/config.inc"
@@ -18,10 +19,13 @@
 #include "modulos/armas.inc"
 #include "modulos/autos.inc"
 #include "modulos/efectos.inc"
+#include "modulos/nemesis.inc"
 #include "modulos/vuelo.inc"
 #include "modulos/interfaz.inc"
 #include "modulos/parque.inc"
+#include "modulos/mapeos.inc"
 #include "modulos/ajustes.inc"
+#include "modulos/perfil.inc"
 
 main()
 {
@@ -42,6 +46,8 @@ public OnGameModeInit()
     Fuego_Iniciar();
     Interfaz_Crear();
     Parque_Iniciar();
+    Nemesis_Iniciar();
+    Mapeos_Cargar();
     return 1;
 }
 
@@ -55,6 +61,7 @@ public OnGameModeExit()
 public OnPlayerConnect(playerid)
 {
     ReiniciarDatos(playerid);
+    Nemesis_AlConectar(playerid);
     gContadorConsulta[playerid]++;
 
     SendClientMessage(playerid, COLOR_EXITO, "Bienvenido a Amanecer Zombie Reborn.");
@@ -72,6 +79,8 @@ public OnPlayerDisconnect(playerid, reason)
     Vuelo_Desactivar(playerid);
     Fuego_AlSalir(playerid);
     Autos_AlSalir(playerid);
+    Parque_AlSalir(playerid);
+    Nemesis_Terminar(playerid);
     GuardarCuenta(playerid);
     gContadorConsulta[playerid]++;
     ReiniciarDatos(playerid);
@@ -84,6 +93,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
     if (Spawns_AlResponderDialogo(playerid, dialogid, response, listitem)) return 1;
     if (Items_AlResponderDialogo(playerid, dialogid, response, listitem)) return 1;
     if (Armas_AlResponderDialogo(playerid, dialogid, response, listitem)) return 1;
+    if (Nemesis_AlResponderDialogo(playerid, dialogid, response)) return 1;
     if (Ajustes_AlResponderDialogo(playerid, dialogid, response, listitem)) return 1;
     return 0;
 }
@@ -100,6 +110,9 @@ public OnPlayerCommandText(playerid, cmdtext[])
     if (Vuelo_AlComando(playerid, cmdtext)) return 1;
     if (Parque_AlComando(playerid, cmdtext)) return 1;
     if (Ajustes_AlComando(playerid, cmdtext)) return 1;
+    if (Perfil_AlComando(playerid, cmdtext)) return 1;
+    if (Efectos_AlComando(playerid, cmdtext)) return 1;
+    if (Nemesis_AlComando(playerid, cmdtext)) return 1;
     return 0;
 }
 
@@ -118,7 +131,8 @@ public OnPlayerUpdate(playerid)
 
 public OnPlayerEditAttachedObject(playerid, EDIT_RESPONSE:response, index, modelid, boneid, Float:fOffsetX, Float:fOffsetY, Float:fOffsetZ, Float:fRotX, Float:fRotY, Float:fRotZ, Float:fScaleX, Float:fScaleY, Float:fScaleZ)
 {
-    Fuego_AlEditarObjeto(playerid, response, index, fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ, fScaleX, fScaleY, fScaleZ);
+    if (Fuego_AlEditarObjeto(playerid, response, index, fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ, fScaleX, fScaleY, fScaleZ)) return 1;
+    Nemesis_AlEditarObjeto(playerid, response, index, fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ, fScaleX, fScaleY, fScaleZ);
     return 1;
 }
 
@@ -177,6 +191,7 @@ public OnPlayerSpawn(playerid)
     Vuelo_PrecargarAnimaciones(playerid);
     Interfaz_Mostrar(playerid);
     Ajustes_Aplicar(playerid);
+    Parque_AlSpawnear(playerid);
     return 1;
 }
 
@@ -195,6 +210,7 @@ public OnPlayerDeath(playerid, killerid, WEAPON:reason)
     Vuelo_Desactivar(playerid);
     Efectos_AlMorir(playerid);
     Cuentas_AlMorir(playerid);
+    Nemesis_AlMorir(playerid);
     Bando_AlMorir(playerid);
     return 1;
 }
@@ -202,5 +218,23 @@ public OnPlayerDeath(playerid, killerid, WEAPON:reason)
 public OnVehicleDeath(vehicleid, killerid)
 {
     Autos_AlMorirVehiculo(vehicleid);
+    return 1;
+}
+
+public OnPlayerEnterCheckpoint(playerid)
+{
+    Parque_AlEntrarCheckpoint(playerid);
+    return 1;
+}
+
+public OnPlayerPickUpPickup(playerid, pickupid)
+{
+    Nemesis_AlTocarPickup(playerid, pickupid);
+    return 1;
+}
+
+public OnPlayerTakeDamage(playerid, issuerid, Float:amount, WEAPON:weaponid, bodypart)
+{
+    Nemesis_AlRecibirDanio(playerid, amount);
     return 1;
 }

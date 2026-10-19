@@ -1,21 +1,38 @@
 // ------------------------------------------------------------
-//  Skatepark de Los Santos: base de la resistencia en la historia.
-//  Mensajes de radio periodicos y /park para ir hasta ahi.
+//  Skatepark de Los Santos: la resistencia humana tomo una instalacion
+//  de Umbrella enfrente. Mensajes de radio periodicos, /park para ir y
+//  el checkpoint de la cura: un zombie que entra queda quieto unos
+//  segundos y vuelve a ser humano.
 // ------------------------------------------------------------
 
 #define RADIO_INTERVALO         (5 * 60 * 1000)     // cada 5 minutos
 
 forward TransmitirRadio();
+forward TerminarCura(playerid, contador);
 
-// Se envian en orden, uno por intervalo, y vuelven a empezar
-static const gMensajesRadio[][] =
+// Transmision militar: encabezado en rojo y dos renglones en blanco
+#define COLOR_RADIO_TITULO      0xFF3333FF
+#define COLOR_RADIO_TEXTO       0xFFFFFFFF
+static const gRadioTitulo[] = "|---------| Transmision Militar |---------|";
+static const gRadioLineas[][] =
 {
-    // Maximo ~105 caracteres: el prefijo con colores ocupa 35 y el chat corta en 144
-    "Aqui la resistencia. Tomamos una instalacion de Umbrella en el skatepark de Los Santos. Usa /park.",
-    "Sobrevivientes: el skatepark es nuestro punto de reunion. No se queden solos ahi afuera. Usa /park.",
-    "Encontramos muestras del virus en el laboratorio de Umbrella. Trabajamos en una cura en el skatepark.",
-    "Si alguien escucha esto: vengan al skatepark (/park) antes de que caiga la noche. No vayan solos."
+    "Hemos tomado la base Umbrella en Los Santos y tenemos la cura al virus.",
+    "El campamento se visualiza en cualquier radar, sur de Glen Park."
 };
+
+// Icono de la cruz roja en el radar (el de hospital del GTA), visible en todo el mapa
+#define ICONO_CURA_SLOT         0       // indice de icono del jugador (0-99)
+#define ICONO_CURA_MODELO       22      // cruz roja
+
+// Checkpoint de la cura: frente al skatepark, en la instalacion de Umbrella.
+// La Z es la del suelo (la posicion guardada con /save es el centro del cuerpo, ~1 m mas alto).
+const Float:CURA_X = 1739.8788;
+const Float:CURA_Y = -1424.3577;
+const Float:CURA_Z = 33.8133;
+const Float:CURA_RADIO = 2.0;
+#define CURA_DURACION           5000    // ms quieto mientras se aplica el antidoto
+
+static bool:gCurando[MAX_PLAYERS];
 
 // Lugares de llegada de /park alrededor del skatepark (x, y, z, angulo).
 // Altura fija a nivel de calle: SetPlayerPosFindZ falla si la zona no esta
@@ -30,8 +47,6 @@ static const Float:gLlegadasParque[][4] =
 
 forward DescongelarParque(playerid, contador);
 
-static gProximoMensajeRadio;
-
 Parque_Iniciar()
 {
     SetTimer("TransmitirRadio", RADIO_INTERVALO, true);
@@ -39,15 +54,14 @@ Parque_Iniciar()
 
 public TransmitirRadio()
 {
-    new mensaje[144];
-    format(mensaje, sizeof(mensaje), "{FFA500}[Radio transmisor] {E0E0E0}%s", gMensajesRadio[gProximoMensajeRadio]);
-    gProximoMensajeRadio = (gProximoMensajeRadio + 1) % sizeof(gMensajesRadio);
-
     for (new i = 0; i < MAX_PLAYERS; i++)
     {
-        if (IsPlayerConnected(i) && gJugador[i][jLogueado] && Ajustes_Activado(i, CFG_SIN_RADIO))
+        if (!IsPlayerConnected(i) || !gJugador[i][jLogueado] || !Ajustes_Activado(i, CFG_SIN_RADIO)) continue;
+
+        SendClientMessage(i, COLOR_RADIO_TITULO, gRadioTitulo);
+        for (new l = 0; l < sizeof(gRadioLineas); l++)
         {
-            SendClientMessage(i, COLOR_INFO, mensaje);
+            SendClientMessage(i, COLOR_RADIO_TEXTO, gRadioLineas[l]);
         }
     }
     return 1;
@@ -80,5 +94,59 @@ Parque_AlComando(playerid, const cmdtext[])
 public DescongelarParque(playerid, contador)
 {
     if (contador == gContadorConsulta[playerid]) TogglePlayerControllable(playerid, true);
+    return 1;
+}
+
+// ------------------------------------------------------------
+//  Checkpoint de la cura
+// ------------------------------------------------------------
+
+// Al spawnear: marca el checkpoint y la cruz roja en el radar (todos lo ven; solo cura a zombies).
+// Si murio mientras lo curaban, se descongela.
+Parque_AlSpawnear(playerid)
+{
+    if (gCurando[playerid])
+    {
+        gCurando[playerid] = false;
+        TogglePlayerControllable(playerid, true);
+    }
+    SetPlayerCheckpoint(playerid, CURA_X, CURA_Y, CURA_Z, CURA_RADIO);
+    SetPlayerMapIcon(playerid, ICONO_CURA_SLOT, CURA_X, CURA_Y, CURA_Z, ICONO_CURA_MODELO, 0, MAPICON_GLOBAL);
+}
+
+Parque_AlSalir(playerid)
+{
+    gCurando[playerid] = false;
+}
+
+// Un zombie que entra queda quieto CURA_DURACION y vuelve a ser humano
+Parque_AlEntrarCheckpoint(playerid)
+{
+    if (!gJugador[playerid][jEnJuego] || gCurando[playerid]) return;
+    if (gJugador[playerid][jBando] != BANDO_ZOMBIE) return;
+    if (Nemesis_Es(playerid))
+    {
+        GameTextForPlayer(playerid, "~r~EL ANTIDOTO NO FUNCIONA EN NEMESIS", 3000, 3);
+        return;
+    }
+
+    gCurando[playerid] = true;
+    TogglePlayerControllable(playerid, false);
+    GameTextForPlayer(playerid, "~g~APLICANDO ANTIDOTO", CURA_DURACION, 3);
+    SetTimerEx("TerminarCura", CURA_DURACION, false, "dd", playerid, gContadorConsulta[playerid]);
+}
+
+public TerminarCura(playerid, contador)
+{
+    if (contador != gContadorConsulta[playerid] || !gCurando[playerid]) return 1;
+    gCurando[playerid] = false;
+    TogglePlayerControllable(playerid, true);
+
+    // Si murio o dejo de ser zombie en el medio (por ejemplo con /cure), no se aplica
+    if (GetPlayerState(playerid) == PLAYER_STATE_WASTED || gJugador[playerid][jBando] != BANDO_ZOMBIE) return 1;
+
+    // Sin los mensajes del spawn: no dice la frase de humano
+    Bando_Curar(playerid, false);
+    if (EsCEO(playerid)) Admin_AlSpawnear(playerid);
     return 1;
 }

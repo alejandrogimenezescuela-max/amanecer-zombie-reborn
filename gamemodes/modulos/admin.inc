@@ -112,7 +112,7 @@ Admin_Rango(playerid)
 }
 
 // "[CEO]" con su color, para insertar en un texto
-static Admin_EtiquetaRango(rango, destino[], largo = sizeof(destino))
+Admin_EtiquetaRango(rango, destino[], largo = sizeof(destino))
 {
     switch (rango)
     {

@@ -155,9 +155,8 @@ Galeria_Abrir(playerid, tipo)
         PlayerTextDrawBackgroundColour(playerid, modelo, GAL_COLOR_CASILLA);
         if (tipo == GALERIA_AUTOS)
         {
-            // Autos vistos de costado y un poco desde arriba, en blanco
+            // Autos vistos de costado y un poco desde arriba (los colores van en MostrarPagina)
             PlayerTextDrawSetPreviewRot(playerid, modelo, -16.0, 0.0, -55.0, 1.0);
-            PlayerTextDrawSetPreviewVehicleColours(playerid, modelo, 1, 1);
         }
         else
         {
@@ -203,6 +202,12 @@ static MostrarPagina(playerid)
         if (indice < total)
         {
             PlayerTextDrawSetPreviewModel(playerid, gGalModelos[playerid][i], ModeloDe(playerid, indice));
+            if (gGalTipo[playerid] == GALERIA_AUTOS)
+            {
+                new color1, color2;
+                Autos_Colores(indice, color1, color2);
+                PlayerTextDrawSetPreviewVehicleColours(playerid, gGalModelos[playerid][i], color1, color2);
+            }
             PlayerTextDrawShow(playerid, gGalModelos[playerid][i]);
 
             EtiquetaDe(playerid, indice, etiqueta);

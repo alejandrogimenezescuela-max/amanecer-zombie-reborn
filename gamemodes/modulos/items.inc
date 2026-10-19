@@ -7,6 +7,22 @@
 #define ITEM_VIRUS              1
 #define ITEM_SKIN               2
 
+// Espera entre cambios de skin con /item
+#define ESPERA_CAMBIO_SKIN_MS   (3 * 60 * 1000)     // 3 minutos
+
+// Momento del ultimo cambio; se guarda junto al contador de conexion para que
+// no pase de un jugador al siguiente que use el mismo id
+static gUltimoCambioSkin[MAX_PLAYERS];
+static gConexionCambioSkin[MAX_PLAYERS] = { -1, ... };
+
+// Milisegundos que faltan para poder cambiar de skin (0 = ya puede)
+static EsperaCambioSkin(playerid)
+{
+    if (gConexionCambioSkin[playerid] != gContadorConsulta[playerid]) return 0;
+    new pasado = GetTickCount() - gUltimoCambioSkin[playerid];
+    return (pasado >= ESPERA_CAMBIO_SKIN_MS) ? 0 : (ESPERA_CAMBIO_SKIN_MS - pasado);
+}
+
 // Devuelve 1 si el comando era de este modulo
 Items_AlComando(playerid, const cmdtext[])
 {
@@ -46,9 +62,22 @@ Items_AlResponderDialogo(playerid, dialogid, response, listitem)
     {
         case ITEM_ANTIDOTO: ComprarAntidoto(playerid);
         case ITEM_VIRUS:    ComprarVirus(playerid);
-        case ITEM_SKIN:     Galeria_Abrir(playerid, GALERIA_SKINS);
+        case ITEM_SKIN:     AbrirCambioSkin(playerid);
     }
     return 1;
+}
+
+static AbrirCambioSkin(playerid)
+{
+    new espera = EsperaCambioSkin(playerid);
+    if (espera > 0)
+    {
+        new segundos = (espera + 999) / 1000, mensaje[80];
+        format(mensaje, sizeof(mensaje), "Podes volver a cambiar de skin en %d:%02d.", segundos / 60, segundos % 60);
+        SendClientMessage(playerid, COLOR_ERROR, mensaje);
+        return;
+    }
+    Galeria_Abrir(playerid, GALERIA_SKINS);
 }
 
 static ComprarAntidoto(playerid)
@@ -56,6 +85,11 @@ static ComprarAntidoto(playerid)
     if (gJugador[playerid][jBando] == BANDO_HUMANO)
     {
         SendClientMessage(playerid, COLOR_ERROR, "El antidoto solo sirve si estas infectado.");
+        return;
+    }
+    if (Nemesis_Es(playerid))
+    {
+        SendClientMessage(playerid, COLOR_ERROR, "El antidoto no funciona en Nemesis.");
         return;
     }
     if (!Dinero_Cobrar(playerid, PRECIO_ANTIDOTO, "el antidoto")) return;
@@ -85,7 +119,10 @@ Items_ElegirSkin(playerid, skin)
     if (gJugador[playerid][jBando] == BANDO_HUMANO) gJugador[playerid][jSkinSeleccion] = skin;
     SetPlayerSkin(playerid, skin);
 
-    new mensaje[48];
-    format(mensaje, sizeof(mensaje), "Cambiaste tu skin al %d.", skin);
+    gUltimoCambioSkin[playerid] = GetTickCount();
+    gConexionCambioSkin[playerid] = gContadorConsulta[playerid];
+
+    new mensaje[80];
+    format(mensaje, sizeof(mensaje), "Cambiaste tu skin al %d. Podes volver a cambiarlo en 3 minutos.", skin);
     SendClientMessage(playerid, COLOR_EXITO, mensaje);
 }

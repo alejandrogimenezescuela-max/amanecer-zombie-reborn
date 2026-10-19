@@ -23,3 +23,19 @@ public BorrarEfecto(objeto)
     DestroyObject(objeto);
     return 1;
 }
+
+// /luz: oculta o vuelve a mostrar los efectos de luz propios (manos de fuego del
+// CEO y efecto del Nemesis). Cualquiera lo puede usar; si no tiene efectos, no cambia nada.
+Efectos_AlComando(playerid, const cmdtext[])
+{
+    new comando[16];
+    ObtenerParametro(cmdtext, 0, comando);
+    if (strcmp(comando, "/luz", true)) return 0;
+
+    gJugador[playerid][jSinLuz] = !gJugador[playerid][jSinLuz];
+    Nemesis_ActualizarLuz(playerid);    // el fuego de las manos se actualiza solo en OnPlayerUpdate
+    SendClientMessage(playerid, COLOR_INFO, gJugador[playerid][jSinLuz]
+        ? ("Efectos de luz ocultos. Usa /luz para volver a mostrarlos.")
+        : ("Efectos de luz visibles."));
+    return 1;
+}

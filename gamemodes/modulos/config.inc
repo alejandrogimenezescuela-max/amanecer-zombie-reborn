@@ -12,6 +12,9 @@
 #define DIALOGO_CONFIG_CLIMA    7
 #define DIALOGO_CONFIG_HORA     8
 #define DIALOGO_ARMAS           9
+#define DIALOGO_PERFIL          10
+#define DIALOGO_NEMESIS         11
+#define DIALOGO_ARMAS_BLANCAS   12
 
 // Opciones de /config que el jugador puede apagar (bits de users.cfg_flags).
 // Se guardan las desactivadas: 0 = todo activado.
@@ -53,6 +56,7 @@
 // Los mismos colores para insertar dentro de un texto (chat)
 #define EMBED_HUMANO            "{00CC00}"
 #define EMBED_ZOMBIE            "{FFFFFF}"
+#define EMBED_NEMESIS           "{FF0000}"
 
 // Musica del selector de skin (MP3 con link directo; el cliente 0.3.7 prefiere http)
 #define MUSICA_SELECTOR         "https://files.catbox.moe/fpbvi0.mp3"
@@ -69,6 +73,9 @@
 // Skin automatico del CEO
 #define SKIN_ADMIN              155
 #define MUNICION_RPG_CEO        10      // el CEO spawnea con un RPG
+
+// Skin exclusivo del Nemesis: no se puede elegir en ningun selector
+#define SKIN_NEMESIS            17
 
 // Particula que aparece donde muere un jugador
 #define MODELO_EFECTO_MUERTE    18668
