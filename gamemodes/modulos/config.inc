@@ -15,6 +15,7 @@
 #define DIALOGO_PERFIL          10
 #define DIALOGO_NEMESIS         11
 #define DIALOGO_ARMAS_BLANCAS   12
+#define DIALOGO_DISCORD         13
 
 // Opciones de /config que el jugador puede apagar (bits de users.cfg_flags).
 // Se guardan las desactivadas: 0 = todo activado.

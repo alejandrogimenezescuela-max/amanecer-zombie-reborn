@@ -12,8 +12,9 @@ Recreación de un servidor de supervivencia zombie de SA-MP, construido sobre **
   ```
   qawno\pawncc.exe gamemodes\amanecer.pwn -ogamemodes\amanecer.amx -iqawno\include -igamemodes -;+ -(+
   ```
-- El gamemode está dividido en módulos en `gamemodes/modulos/*.inc` (config, utiles, jugador, mysql, dinero, bandos, spawns, cuentas, admin, fuego, conexiones, galeria, items, armas, autos, efectos, nemesis, vuelo, interfaz, parque, mapeos, ajustes, perfil). `amanecer.pwn` solo tiene los callbacks y delega en funciones de cada módulo (sin y_hooks).
+- El gamemode está dividido en módulos en `gamemodes/modulos/*.inc` (config, utiles, jugador, mysql, dinero, bandos, spawns, cuentas, admin, fuego, conexiones, baneos, discord, galeria, items, armas, autos, efectos, nemesis, vuelo, interfaz, parque, mapeos, ajustes, perfil). `amanecer.pwn` solo tiene los callbacks y delega en funciones de cada módulo (sin y_hooks).
 - Plugins (no se suben a git; se bajan aparte): `mysql` (R41) y `streamer` (Incognito v2.9.6, `plugins/streamer.dll` + `qawno/include/streamer.inc`), ambos en `legacy_plugins` de `config.json`. Los mapeos usan `CreateDynamicObject` del streamer.
+- Bot de Discord en `bot/` (Node.js, discord.js + mysql2): `/vincular <codigo>`. Token y IDs en `bot/.env` (ver `bot/.env.example`, no se sube); MySQL lo lee de `mysql.ini`. Iniciar con `npm start` dentro de `bot/` (la primera vez `npm install`).
 - Base de datos: **MySQL** (según `ROADMAP.md`). El primer borrador del sistema de cuentas usó SQLite (`scriptfiles/amanecer.db`) y hay que migrarlo.
 - Para probar: cliente SA-MP 0.3.7 conectando a `127.0.0.1:7777`.
 

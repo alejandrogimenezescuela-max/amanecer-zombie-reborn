@@ -8,7 +8,7 @@
 #define MOTIVO_KICK             2       // Kick() o Ban(): el servidor no los distingue
 
 // Se marca antes de llamar a Ban() para que el aviso diga "Ban" y no "Kick".
-// Todavia no hay sistema de bans: lo va a usar cuando exista.
+// Lo usa baneos.inc.
 static bool:gSaleBaneado[MAX_PLAYERS];
 
 stock Conexion_MarcarBan(playerid)

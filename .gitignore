@@ -17,3 +17,7 @@ crashinfo.txt
 
 # Credenciales
 mysql.ini
+
+# Bot de Discord: dependencias y token
+bot/node_modules/
+bot/.env
