@@ -58,6 +58,7 @@ Admin_AlComando(playerid, const cmdtext[])
     if (!strcmp(comando, "/admin", true) || !strcmp(comando, "/admins", true)) return ComandoListaAdmins(playerid);
     if (!strcmp(comando, "/daradmin", true)) return ComandoDarAdmin(playerid, cmdtext);
     if (!strcmp(comando, "/dardinero", true)) return ComandoDarDinero(playerid, cmdtext);
+    if (!strcmp(comando, "/mochila", true)) return ComandoMochila(playerid);
 
     new bool:esCura = !strcmp(comando, "/cure", true);
     if (!esCura && strcmp(comando, "/virus", true)) return 0;
@@ -212,6 +213,24 @@ static ComandoDarAdmin(playerid, const cmdtext[])
             SendClientMessage(objetivo, COLOR_INFO, mensaje);
         }
     }
+    return 1;
+}
+
+// /mochila: equipa un jetpack (moderador, administrador y CEO)
+static ComandoMochila(playerid)
+{
+    if (Admin_Rango(playerid) < RANGO_MODERADOR)
+    {
+        SendClientMessage(playerid, COLOR_ERROR, "No tenes permiso para usar este comando.");
+        return 1;
+    }
+    if (!gJugador[playerid][jEnJuego] || GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
+    {
+        SendClientMessage(playerid, COLOR_ERROR, "Tenes que estar a pie para usar la mochila.");
+        return 1;
+    }
+    SetPlayerSpecialAction(playerid, SPECIAL_ACTION_USEJETPACK);
+    SendClientMessage(playerid, COLOR_EXITO, "Te equipaste la mochila propulsora.");
     return 1;
 }
 

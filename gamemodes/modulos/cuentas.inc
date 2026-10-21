@@ -165,7 +165,7 @@ Cuentas_AlResponderDialogo(playerid, dialogid, response, const inputtext[])
             mysql_tquery(gMySQL, consulta);
 
             SendClientMessage(playerid, COLOR_EXITO, "Iniciaste sesion correctamente.");
-            IniciarSesion(playerid);
+            Discord_Verificar(playerid);    // si ya tiene Discord pasa directo al selector
             return 1;
         }
         case DIALOGO_REGISTRO:
@@ -208,7 +208,7 @@ public AlRegistrarCuenta(playerid, contador)
 
     gJugador[playerid][jId] = cache_insert_id();
     SendClientMessage(playerid, COLOR_EXITO, "Cuenta registrada. Bienvenido al apocalipsis.");
-    IniciarSesion(playerid);
+    Discord_Verificar(playerid);
     return 1;
 }
 

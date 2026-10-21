@@ -14,6 +14,8 @@
 #include "modulos/admin.inc"
 #include "modulos/fuego.inc"
 #include "modulos/conexiones.inc"
+#include "modulos/baneos.inc"
+#include "modulos/discord.inc"
 #include "modulos/galeria.inc"
 #include "modulos/items.inc"
 #include "modulos/armas.inc"
@@ -37,6 +39,7 @@ public OnGameModeInit()
     MySQL_Conectar();
     Dinero_PrepararTabla();
     Ajustes_PrepararTabla();
+    Discord_PrepararTabla();
     SetGameModeText("Zombie Survival");
     SetWeather(CLIMA_NIEBLA);
     UsePlayerPedAnims();    // todos los skins caminan y corren como CJ
@@ -62,13 +65,15 @@ public OnPlayerConnect(playerid)
 {
     ReiniciarDatos(playerid);
     Nemesis_AlConectar(playerid);
+    Discord_AlConectar(playerid);
+    Mapeos_QuitarEdificios(playerid);
     gContadorConsulta[playerid]++;
 
     SendClientMessage(playerid, COLOR_EXITO, "Bienvenido a Amanecer Zombie Reborn.");
     Conexion_AlEntrar(playerid);
 
     Bando_CrearTexto(playerid);
-    Cuentas_AlConectar(playerid);
+    Baneos_AlConectar(playerid);   // si no esta baneado sigue con el login
     return 1;
 }
 
@@ -90,6 +95,7 @@ public OnPlayerDisconnect(playerid, reason)
 public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 {
     if (Cuentas_AlResponderDialogo(playerid, dialogid, response, inputtext)) return 1;
+    if (Discord_AlResponderDialogo(playerid, dialogid, response)) return 1;
     if (Spawns_AlResponderDialogo(playerid, dialogid, response, listitem)) return 1;
     if (Items_AlResponderDialogo(playerid, dialogid, response, listitem)) return 1;
     if (Armas_AlResponderDialogo(playerid, dialogid, response, listitem)) return 1;
@@ -103,6 +109,7 @@ public OnPlayerCommandText(playerid, cmdtext[])
     if (!gJugador[playerid][jLogueado]) return 1;
     if (Spawns_AlComando(playerid, cmdtext)) return 1;
     if (Admin_AlComando(playerid, cmdtext)) return 1;
+    if (Baneos_AlComando(playerid, cmdtext)) return 1;
     if (Fuego_AlComando(playerid, cmdtext)) return 1;
     if (Items_AlComando(playerid, cmdtext)) return 1;
     if (Armas_AlComando(playerid, cmdtext)) return 1;

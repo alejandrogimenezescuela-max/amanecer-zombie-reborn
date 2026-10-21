@@ -148,3 +148,18 @@ CREATE TABLE IF NOT EXISTS banlist (
     CONSTRAINT fk_ban_user FOREIGN KEY (user_id) REFERENCES users (id)
         ON DELETE SET NULL
 ) ENGINE=InnoDB;
+
+-- ------------------------------------------------------------
+--  Codigos para vincular la cuenta con Discord (Dia 12).
+--  El juego crea uno al iniciar sesion sin Discord y el bot lo
+--  canjea con /vincular. Tambien lo crea el gamemode al arrancar.
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS discord_codigos (
+    codigo          CHAR(6)      NOT NULL,
+    user_id         INT UNSIGNED NOT NULL,
+    expira          DATETIME     NOT NULL,
+    PRIMARY KEY (codigo),
+    UNIQUE KEY uq_codigo_user (user_id),
+    CONSTRAINT fk_codigo_user FOREIGN KEY (user_id) REFERENCES users (id)
+        ON DELETE CASCADE
+) ENGINE=InnoDB;
